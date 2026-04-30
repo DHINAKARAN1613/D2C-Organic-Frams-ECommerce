@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+
+  --radius: var(--radius);
+}
+
+@layer base {
+  :root {
+    /* Sage Green Theme System - Strict Enforcement */
+
+    /* Semantic Colors */
+    --background: 146 54% 4%;
+    /* #051109 - Deepest Sage Black */
+    --foreground: 0 0% 100%;
+    /* #ffffff - Pure White */
+
+    --surface: 145 32% 10%;
+    /* #112117 - Standard Card Surface */
+    --surface-highlight: 145 26% 14%;
+    /* #1c2e24 - Hover/Interactive */
+
+    --primary: 144 79% 55%;
+    /* #30e87a - Vibrant Action Green */
+    --primary-foreground: 145 32% 10%;
+    /* #112117 - Dark on Primary */
+
+    --secondary: 145 13% 67%;
+    /* #9db8a8 - Muted Sage */
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 146 12% 75%;
+    /* #b0c4b8 - Readable Muted Text */
+    --muted-foreground: 146 12% 75%;
+
+    --accent: 38 92% 50%;
+    /* #f59e0b - Warm Accent (Amber/Orange) */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 145 26% 20%;
+    /* #29382f - Subtle Divider */
+    --input: 145 26% 20%;
+
+    --card: 145 32% 10%;
+    --card-foreground: 0 0% 100%;
+
+    --radius: 1rem;
+
+    /* Global Defaults */
+    color: hsl(var(--foreground));
+    background-color: hsl(var(--background));
+  }
+}
+
+@layer utilities {
+  .product-text-force {
+    color: #000000 !important;
+    position: relative;
+    z-index: 20;
+  }
+
+  .dark .product-text-force {
+    color: #ffffff !important;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  opacity: 0.5;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Custom Scrollbar Specific Class */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #112117;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #29382f;
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #3c5345;
+}
+
+/* Range Slider Styling */
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #30e87a;
+  cursor: pointer;
+  margin-top: -6px;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  cursor: pointer;
+  background: #29382f;
+  border-radius: 2px;
+}
