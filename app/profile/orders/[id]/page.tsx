@@ -3,7 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, Package, MapPin, Calendar, CreditCard, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Package, MapPin, Calendar, CreditCard, ChevronRight, ClipboardList, PackageSearch, Truck, CheckCircle2, XCircle } from 'lucide-react';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/imageUtils';
 
@@ -81,8 +81,75 @@ export default async function OrderDetailPage(props: { params: Promise<{ id: str
             </div>
 
             <div className="grid md:grid-cols-3 gap-8">
-                {/* Main Content: Items */}
+                {/* Main Content: Items & Tracking */}
                 <div className="md:col-span-2 space-y-6">
+                    {/* Order Tracking Timeline */}
+                    <div className="bg-[#1c2e24] border border-[#2d4035] rounded-2xl p-6 md:p-8">
+                        <h2 className="font-bold text-white mb-8 text-lg">Track Order</h2>
+                        
+                        {order.status === 'CANCELLED' ? (
+                            <div className="flex flex-col items-center justify-center py-6 text-red-500">
+                                <XCircle className="w-12 h-12 mb-3 opacity-80" />
+                                <h3 className="text-xl font-bold">Order Cancelled</h3>
+                                <p className="text-sm text-red-400/80 mt-1">This order has been cancelled and will not be delivered.</p>
+                            </div>
+                        ) : (
+                            <div className="relative">
+                                {/* Horizontal Line Background (Desktop) */}
+                                <div className="hidden md:block absolute top-6 left-[12.5%] right-[12.5%] h-1 bg-[#2d4035] rounded-full z-0">
+                                    <div className="h-full bg-[#30e87a] transition-all duration-500 rounded-full" style={{ width: `${(Math.min(Math.max(0, ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'].indexOf(order.status)), 3) / 3) * 100}%` }}></div>
+                                </div>
+                                {/* Vertical Line Background (Mobile) */}
+                                <div className="md:hidden absolute top-[24px] bottom-[24px] left-[22px] w-1 bg-[#2d4035] rounded-full z-0">
+                                    <div className="w-full bg-[#30e87a] transition-all duration-500 rounded-full" style={{ height: `${(Math.min(Math.max(0, ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'].indexOf(order.status)), 3) / 3) * 100}%` }}></div>
+                                </div>
+
+                                <div className="flex flex-col md:flex-row justify-between relative z-10 gap-8 md:gap-0">
+                                    {[
+                                        { id: 'PENDING', label: 'Order Placed', icon: ClipboardList, desc: 'We have received your order' },
+                                        { id: 'PROCESSING', label: 'Processing', icon: PackageSearch, desc: 'Your order is being prepared' },
+                                        { id: 'SHIPPED', label: 'Shipped', icon: Truck, desc: 'Your order is on the way' },
+                                        { id: 'DELIVERED', label: 'Delivered', icon: CheckCircle2, desc: 'Order has been delivered' }
+                                    ].map((step, index, arr) => {
+                                        // Determine status progression
+                                        const statusFlow = ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED'];
+                                        const currentStatusIndex = Math.max(0, statusFlow.indexOf(order.status));
+                                        
+                                        const isCompleted = index < currentStatusIndex;
+                                        const isCurrent = index === currentStatusIndex;
+                                        const isUpcoming = index > currentStatusIndex;
+
+                                        return (
+                                            <div key={step.id} className="flex md:flex-col items-center md:w-1/4 gap-4 md:gap-3 group">
+
+                                                {/* Icon Circle */}
+                                                <div className={`w-12 h-12 rounded-full flex items-center justify-center shrink-0 border-4 transition-all duration-300
+                                                    ${isCompleted ? 'bg-[#30e87a] border-[#1c2e24] text-[#112117] shadow-[0_0_15px_rgba(48,232,122,0.4)]' : 
+                                                      isCurrent ? 'bg-[#112117] border-[#30e87a] text-[#30e87a] shadow-[0_0_10px_rgba(48,232,122,0.2)]' : 
+                                                      'bg-[#112117] border-[#2d4035] text-[#9db8a8]'}`}
+                                                >
+                                                    <step.icon className={`w-5 h-5 ${isCurrent && 'animate-pulse'}`} />
+                                                </div>
+
+                                                {/* Label and Description */}
+                                                <div className="md:text-center flex flex-col md:items-center">
+                                                    <h3 className={`font-bold text-sm md:text-base ${isCompleted || isCurrent ? 'text-white' : 'text-[#9db8a8]'}`}>
+                                                        {step.label}
+                                                    </h3>
+                                                    <p className={`text-xs mt-0.5 ${isCompleted || isCurrent ? 'text-[#30e87a]' : 'text-[#5c7a68]'}`}>
+                                                        {isCompleted ? 'Completed' : isCurrent ? 'In Progress' : 'Pending'}
+                                                    </p>
+                                                    <p className="hidden md:block text-xs text-[#9db8a8] mt-1 max-w-[120px] mx-auto text-center leading-tight">
+                                                        {step.desc}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     {/* Payment Pending Alert */}
                     {(order.status === 'PENDING_PAYMENT' || order.status === 'PENDING') && (
                         <div className="bg-orange-500/10 border border-orange-500/20 rounded-2xl p-6">
@@ -174,9 +241,9 @@ export default async function OrderDetailPage(props: { params: Promise<{ id: str
                         </h2>
                         <div className="space-y-3 text-sm">
                             {(order as any).paymentId && (
-                                <div className="flex justify-between text-[#9db8a8] border-b border-[#2d4035] pb-2 mb-2">
-                                    <span>Transaction ID</span>
-                                    <span className="font-mono text-xs text-white bg-[#112117] px-2 py-0.5 rounded">{(order as any).paymentId}</span>
+                                <div className="flex justify-between items-start text-[#9db8a8] border-b border-[#2d4035] pb-2 mb-2 gap-4">
+                                    <span className="shrink-0">Transaction ID</span>
+                                    <span className="font-mono text-xs text-white bg-[#112117] px-2 py-0.5 rounded break-all text-right">{(order as any).paymentId}</span>
                                 </div>
                             )}
                             <div className="flex justify-between text-[#9db8a8]">

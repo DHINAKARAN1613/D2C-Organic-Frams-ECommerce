@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShoppingBag, Package, Users, BarChart3, Settings, Leaf, LogOut } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Package, Users, BarChart3, Settings, Leaf, LogOut, User, MessageSquare } from 'lucide-react';
+import { Session } from 'next-auth';
 
 const MENU_ITEMS = [
     { name: 'Dashboard', icon: LayoutDashboard, href: '/admin' },
@@ -10,9 +11,10 @@ const MENU_ITEMS = [
     { name: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
     { name: 'Customers', icon: Users, href: '/admin/customers' },
     { name: 'Analytics', icon: BarChart3, href: '/admin/analytics' },
+    { name: 'Support', icon: MessageSquare, href: '/admin/support' },
 ];
 
-export function Sidebar({ lowStockCount = 0 }: { lowStockCount?: number }) {
+export function Sidebar({ lowStockCount = 0, session }: { lowStockCount?: number, session: Session }) {
     const pathname = usePathname();
 
     return (
@@ -73,15 +75,21 @@ export function Sidebar({ lowStockCount = 0 }: { lowStockCount?: number }) {
                     <span className="text-sm font-medium">Settings</span>
                 </Link>
 
-                <div className="pt-2 mt-2 flex items-center gap-3 px-4 border-t border-[#2d4035]/50">
-                    <div className="size-10 rounded-full bg-[#1c2e24] border border-[#2d4035] flex items-center justify-center overflow-hidden">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="Admin" className="w-full h-full" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-white truncate">Alex Morgan</p>
-                        <p className="text-xs text-[#9db8a8] truncate">Admin</p>
-                    </div>
-                    <Link href="/api/auth/signout" className="p-2 text-[#9db8a8] hover:text-red-400 transition-colors" title="Sign Out">
+                <div className="pt-2 mt-2 flex items-center gap-3 px-4 border-t border-[#2d4035]/50 group">
+                    <Link href="/admin/profile" className="flex-1 min-w-0 flex items-center gap-3 hover:opacity-80 transition-opacity">
+                        <div className="size-10 rounded-full bg-[#1c2e24] border border-[#2d4035] flex items-center justify-center overflow-hidden shrink-0">
+                            {session?.user?.image ? (
+                                <img src={session.user.image} alt={session.user.name || "Admin"} className="w-full h-full object-cover" />
+                            ) : (
+                                <User className="w-5 h-5 text-[#9db8a8]" />
+                            )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold text-white truncate">{session?.user?.name || 'Admin User'}</p>
+                            <p className="text-xs text-[#9db8a8] truncate capitalize">{session?.user?.role?.toLowerCase() || 'Admin'}</p>
+                        </div>
+                    </Link>
+                    <Link href="/api/auth/signout" className="p-2 text-[#9db8a8] hover:text-red-400 transition-colors bg-[#112117] rounded-lg border border-[#2d4035] opacity-0 group-hover:opacity-100" title="Sign Out">
                         <LogOut className="w-4 h-4" />
                     </Link>
                 </div>

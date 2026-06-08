@@ -45,3 +45,40 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
         return new NextResponse('Internal Error', { status: 500 });
     }
 }
+
+export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        const session = await getServerSession(authOptions);
+        const { id } = await params;
+
+        if (!session?.user?.id) {
+            return new NextResponse('Unauthorized', { status: 401 });
+        }
+
+        const body = await req.json();
+        const { status } = body;
+
+        if (!status) {
+            return new NextResponse('Status is required', { status: 400 });
+        }
+
+        const order = await prisma.order.update({
+            where: {
+                id: id,
+            },
+            data: {
+                status,
+            },
+            include: {
+                user: true
+            }
+        });
+
+        // Trigger real-time notifications
+
+        return NextResponse.json(order);
+    } catch (error) {
+        console.error('[ORDER_PATCH]', error);
+        return new NextResponse('Internal Error', { status: 500 });
+    }
+}

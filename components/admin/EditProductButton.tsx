@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useToast } from '@/context/ToastContext';
 import { Edit2, X, Loader2, Save } from 'lucide-react';
 import { updateProduct } from '@/app/admin/products/actions';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,6 +10,7 @@ import { getImageUrl } from '@/lib/imageUtils';
 export function EditProductButton({ product }: { product: any }) {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const { error, success } = useToast();
 
     // Helper to get raw image string for editing
     const rawImage = getImageUrl(product.images) || '';
@@ -23,8 +25,9 @@ export function EditProductButton({ product }: { product: any }) {
 
         if (res.success) {
             setIsOpen(false);
+            success('Product updated successfully');
         } else {
-            alert('Failed to update product');
+            error('Failed to update product');
         }
     }
 
@@ -107,10 +110,12 @@ export function EditProductButton({ product }: { product: any }) {
                                                     if (data.success) {
                                                         const input = document.getElementById(`edit-image-${product.id}`) as HTMLInputElement;
                                                         if (input) input.value = data.url;
+                                                    } else {
+                                                        error('Upload failed');
                                                     }
                                                 } catch (err) {
                                                     console.error(err);
-                                                    alert('Upload failed');
+                                                    error('Upload failed');
                                                 } finally {
                                                     setIsLoading(false);
                                                 }

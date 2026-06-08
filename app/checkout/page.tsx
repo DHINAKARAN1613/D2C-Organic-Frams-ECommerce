@@ -76,16 +76,18 @@ export default function CheckoutPage() {
             if (!res.ok) {
                 if (res.status === 401) {
                     window.location.href = '/api/auth/signin?callbackUrl=/checkout';
-                    return;
+                    return { success: false, error: 'Unauthorized' };
                 }
-                throw new Error('Failed to create order');
+                const errorText = await res.text();
+                return { success: false, error: errorText || 'Failed to create order' };
             }
 
             const order = await res.json();
             window.location.href = `/profile/orders/${order.id}`;
-        } catch (error) {
+            return { success: true };
+        } catch (error: any) {
             console.error('Checkout error:', error);
-            throw new Error('Failed to process order. Please try again.');
+            return { success: false, error: error.message || 'Failed to process order. Please try again.' };
         }
     };
 
@@ -162,10 +164,11 @@ export default function CheckoutPage() {
                         {step === "shipping" ? (
                             <CheckoutAddressForm onSubmit={handleAddressSubmit} />
                         ) : (
-                            <CheckoutPaymentForm
-                                onBack={handleBackToShipping}
-                                onSubmit={handlePaymentSubmit}
-                            />
+                                <CheckoutPaymentForm
+                                    onBack={handleBackToShipping}
+                                    onSubmit={handlePaymentSubmit}
+                                    total={total}
+                                />
                         )}
                     </div>
 

@@ -81,10 +81,7 @@ export default async function CustomersPage() {
 
                                 <div className="pt-3 border-t border-[#2d4035] flex justify-between items-center gap-2">
                                     <span className="text-xs text-[#9db8a8]">{user._count.products} products · {user._count.orders} orders</span>
-                                    <VerifyFarmerButton
-                                        userId={user.id}
-                                        isVerified={(user as any).isVerifiedFarmer}
-                                    />
+                                    <VerifyFarmerButton user={user} />
                                 </div>
                             </div>
                         ))}

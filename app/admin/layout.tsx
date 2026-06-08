@@ -16,5 +16,5 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         where: { stock: { lt: 10 } }
     });
 
-    return <AdminLayoutClient lowStockCount={lowStockCount}>{children}</AdminLayoutClient>;
+    return <AdminLayoutClient lowStockCount={lowStockCount} session={session}>{children}</AdminLayoutClient>;
 }

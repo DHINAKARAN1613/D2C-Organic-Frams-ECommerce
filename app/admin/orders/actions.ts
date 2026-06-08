@@ -5,10 +5,13 @@ import { revalidatePath } from 'next/cache';
 
 export async function updateOrderStatus(orderId: string, status: string) {
     try {
-        await prisma.order.update({
+        const order = await prisma.order.update({
             where: { id: orderId },
             data: { status }
         });
+
+
+
         revalidatePath('/admin/orders');
         return { success: true };
     } catch (error) {

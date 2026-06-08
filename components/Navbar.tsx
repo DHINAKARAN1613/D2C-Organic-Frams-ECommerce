@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserNav } from './UserNav';
 import { useCart } from '@/context/CartContext';
+import { LanguageToggle } from './ui/LanguageToggle';
 
 export function Navbar() {
     const { data: session } = useSession();
@@ -75,6 +76,8 @@ export function Navbar() {
 
                     {/* Icons */}
                     <div className="flex items-center gap-2">
+                        <LanguageToggle />
+
                         <motion.button
                             onClick={toggleCart}
                             aria-label="Cart"

@@ -5,7 +5,9 @@ import { Sidebar } from './Sidebar';
 import { AdminHeader } from './AdminHeader';
 import { Menu, X } from 'lucide-react';
 
-export default function AdminLayoutClient({ children, lowStockCount }: { children: React.ReactNode, lowStockCount?: number }) {
+import { Session } from 'next-auth';
+
+export default function AdminLayoutClient({ children, lowStockCount, session }: { children: React.ReactNode, lowStockCount?: number, session: Session }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
@@ -28,7 +30,7 @@ export default function AdminLayoutClient({ children, lowStockCount }: { childre
                         <X className="w-6 h-6" />
                     </button>
                 </div>
-                <Sidebar lowStockCount={lowStockCount} />
+                <Sidebar lowStockCount={lowStockCount} session={session} />
             </div>
 
             {/* Main Content */}

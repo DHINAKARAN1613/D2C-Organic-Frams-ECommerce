@@ -10,6 +10,9 @@ export async function createFarmerProduct(formData: FormData) {
     const userId = session?.user?.id;
     if (!userId) throw new Error('Not authenticated');
 
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.isVerifiedFarmer) throw new Error('Not verified');
+
     const name = formData.get('name') as string;
     const price = parseFloat(formData.get('price') as string);
     const originalPriceRaw = formData.get('originalPrice') as string;
@@ -64,6 +67,9 @@ export async function updateFarmerProduct(id: string, formData: FormData) {
     const userId = session?.user?.id;
     if (!userId) throw new Error('Not authenticated');
 
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.isVerifiedFarmer) throw new Error('Not verified');
+
     const product = await prisma.product.findUnique({ where: { id } });
     if (!product || product.farmerId !== userId) {
         throw new Error('Not authorized');
@@ -101,6 +107,9 @@ export async function deleteFarmerProduct(id: string) {
     const session = await getServerSession(authOptions);
     const userId = session?.user?.id;
     if (!userId) throw new Error('Not authenticated');
+
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user || !user.isVerifiedFarmer) throw new Error('Not verified');
 
     const product = await prisma.product.findUnique({ where: { id } });
     if (!product || product.farmerId !== userId) {

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Mail, Lock, ArrowRight, Loader2, User, ShieldCheck, Leaf } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
+import { useToast } from '@/context/ToastContext';
 
 export default function SignInPage() {
     const router = useRouter();
@@ -13,6 +14,7 @@ export default function SignInPage() {
     const [password, setPassword] = useState('');
     const [role, setRole] = useState<'USER' | 'ADMIN'>('USER');
     const [isLoading, setIsLoading] = useState<string | null>(null);
+    const { error } = useToast();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -25,7 +27,7 @@ export default function SignInPage() {
             });
 
             if (res?.error) {
-                alert('Invalid credentials');
+                error('Invalid credentials');
             } else {
                 router.push(role === 'ADMIN' ? '/admin' : '/');
             }
@@ -126,7 +128,7 @@ export default function SignInPage() {
                     <button
                         onClick={() => setRole('USER')}
                         type="button"
-                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all ${role === 'USER' ? 'bg-primary text-primary-foreground shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all ${role === 'USER' ? 'bg-[#30e87a] text-[#112117] shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
                     >
                         <User className="w-4 h-4" /> Customer
                     </button>
@@ -172,7 +174,7 @@ export default function SignInPage() {
                                 <Mail className="w-5 h-5 relative z-10" />
                             </div>
                             <input
-                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
+                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-[#9db8a8]/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
                                 id="email"
                                 placeholder="you@example.com"
                                 type="email"
@@ -192,7 +194,7 @@ export default function SignInPage() {
                                 <Lock className="w-5 h-5 relative z-10" />
                             </div>
                             <input
-                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
+                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-[#9db8a8]/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
                                 id="password"
                                 placeholder="••••••••"
                                 type="password"

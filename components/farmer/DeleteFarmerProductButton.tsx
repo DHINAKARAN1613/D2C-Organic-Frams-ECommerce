@@ -2,11 +2,13 @@
 
 import { useState } from 'react';
 import { Trash2, Loader2, AlertTriangle, X } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
 import { deleteFarmerProduct } from '@/app/farmer/products/actions';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function DeleteFarmerProductButton({ productId }: { productId: string }) {
     const [isOpen, setIsOpen] = useState(false);
+    const { error, success } = useToast();
     const [isLoading, setIsLoading] = useState(false);
 
     async function handleDelete() {
@@ -16,8 +18,9 @@ export function DeleteFarmerProductButton({ productId }: { productId: string }) 
 
         if (res.success) {
             setIsOpen(false);
+            success('Product deleted successfully');
         } else {
-            alert('Failed to delete product');
+            error('Failed to delete product');
         }
     }
 

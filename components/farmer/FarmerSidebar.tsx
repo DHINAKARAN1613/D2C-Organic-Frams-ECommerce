@@ -2,17 +2,23 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Leaf, LogOut, Store } from 'lucide-react';
+import { LayoutDashboard, Package, Leaf, LogOut, Store, ShoppingBag, BarChart3, ShieldCheck } from 'lucide-react';
 import { useSession } from 'next-auth/react';
-
-const MENU_ITEMS = [
-    { name: 'Dashboard', icon: LayoutDashboard, href: '/farmer' },
-    { name: 'My Products', icon: Package, href: '/farmer/products' },
-];
+import { useLanguage } from '@/context/LanguageContext';
+import { LanguageToggle } from '@/components/ui/LanguageToggle';
 
 export function FarmerSidebar() {
     const pathname = usePathname();
     const { data: session } = useSession();
+    const { t } = useLanguage();
+
+    const MENU_ITEMS = [
+        { name: t.dashboard, icon: LayoutDashboard, href: '/farmer' },
+        { name: t.products, icon: Package, href: '/farmer/products' },
+        { name: t.orders, icon: ShoppingBag, href: '/farmer/orders' },
+        { name: t.analytics, icon: BarChart3, href: '/farmer/analytics' },
+        { name: 'Verification', icon: ShieldCheck, href: '/farmer/kyc' },
+    ];
 
     return (
         <aside className="w-full h-full bg-[#112117] flex flex-col overflow-y-auto">
@@ -51,12 +57,15 @@ export function FarmerSidebar() {
 
             {/* Bottom Actions */}
             <div className="p-4 mt-auto border-t border-[#2d4035] space-y-2">
+                <div className="px-4 py-2">
+                    <LanguageToggle />
+                </div>
                 <Link
                     href="/shop"
                     className="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-[#9db8a8] hover:bg-[#1c2e24] hover:text-[#30e87a] group"
                 >
                     <Store className="w-5 h-5 text-[#9db8a8] group-hover:text-[#30e87a]" />
-                    <span className="text-sm font-medium flex-1">Back to Store</span>
+                    <span className="text-sm font-medium flex-1">{t.shop}</span>
                 </Link>
                 <div className="pt-2 mt-2 flex items-center gap-3 px-4 border-t border-[#2d4035]/50">
                     <div className="size-10 rounded-full bg-[#1c2e24] border border-[#2d4035] flex items-center justify-center overflow-hidden">
@@ -66,7 +75,7 @@ export function FarmerSidebar() {
                         <p className="text-sm font-bold text-white truncate">{session?.user?.name || "Farmer"}</p>
                         <p className="text-xs text-[#9db8a8] truncate">Seller</p>
                     </div>
-                    <Link href="/api/auth/signout" className="p-2 text-[#9db8a8] hover:text-red-400 transition-colors" title="Sign Out">
+                    <Link href="/api/auth/signout" className="p-2 text-[#9db8a8] hover:text-red-400 transition-colors" title={t.logout}>
                         <LogOut className="w-4 h-4" />
                     </Link>
                 </div>

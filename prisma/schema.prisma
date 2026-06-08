@@ -42,7 +42,12 @@ model User {
   password      String?
   image         String?
   phone         String?
+  phoneVerified DateTime?
   bio               String?
+  kycStatus         String    @default("UNVERIFIED") // UNVERIFIED, PENDING, VERIFIED, REJECTED
+  aadharNumber      String?
+  aadharImage       String?
+  farmAddress       String?
   isVerifiedFarmer  Boolean   @default(false)
   role              String    @default("USER")
   accounts      Account[]
@@ -51,8 +56,12 @@ model User {
   addresses     Address[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  wishlist  WishlistItem[]
-  products  Product[] @relation("FarmerProducts")
+  wishlist      WishlistItem[]
+  products      Product[]     @relation("FarmerProducts")
+  chatSessions  ChatSession[]
+  messagesSent  Message[]
+  reviews       Review[]
+  otps          OTP[]
 }
 
 model VerificationToken {
@@ -89,8 +98,9 @@ model Product {
   farmer      User?       @relation("FarmerProducts", fields: [farmerId], references: [id])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  orderItems  OrderItem[]
-  wishlistedBy WishlistItem[]
+  orderItems    OrderItem[]
+  wishlistedBy  WishlistItem[]
+  reviews       Review[]
 }
 
 model Order {
@@ -156,4 +166,53 @@ model WishlistItem {
   createdAt DateTime @default(now())
 
   @@unique([userId, productId])
+}
+
+model ChatSession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      String   @default("OPEN") // OPEN, CLOSED
+  isBotActive Boolean  @default(true) // True = Gemini replies, False = Admin taken over
+  messages    Message[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Message {
+  id            String      @id @default(cuid())
+  chatSessionId String
+  chatSession   ChatSession @relation(fields: [chatSessionId], references: [id], onDelete: Cascade)
+  senderId      String?
+  sender        User?       @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  content       String
+  isRead        Boolean     @default(false)
+  isBot         Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      // 1 to 5
+  comment   String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+}
+
+model OTP {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  code       String
+  type       String   // "EMAIL" or "PHONE"
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
 }

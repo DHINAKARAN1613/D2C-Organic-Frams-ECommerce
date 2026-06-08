@@ -1,76 +1,127 @@
 "use client";
 
-import { useState } from "react";
-import { Loader2, ArrowLeft, Lock, ShieldCheck, CheckCircle2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Loader2, ArrowLeft, Lock, ShieldCheck } from "lucide-react";
 import { useToast } from "@/context/ToastContext";
 
 interface CheckoutPaymentFormProps {
     onBack: () => void;
-    onSubmit: (paymentId: string) => Promise<void>;
+    onSubmit: (paymentId: string) => Promise<{success: boolean, error?: string}>;
+    total: number;
 }
 
-export function CheckoutPaymentForm({ onBack, onSubmit }: CheckoutPaymentFormProps) {
+export function CheckoutPaymentForm({ onBack, onSubmit, total }: CheckoutPaymentFormProps) {
     const { success, error } = useToast();
     const [loading, setLoading] = useState(false);
 
-    // Controlled inputs for a more realistic feel
-    const [cardName, setCardName] = useState("");
-    const [cardNumber, setCardNumber] = useState("");
-    const [expiry, setExpiry] = useState("");
-    const [cvv, setCvv] = useState("");
-
-    const formatCardNumber = (value: string) => {
-        const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-        const matches = v.match(/\d{4,16}/g);
-        const match = matches && matches[0] || '';
-        const parts = [];
-        for (let i = 0, len = match.length; i < len; i += 4) {
-            parts.push(match.substring(i, i + 4));
-        }
-        if (parts.length) {
-            return parts.join(' ');
-        } else {
-            return value;
-        }
-    };
-
-    const formatExpiry = (value: string) => {
-        const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
-        if (v.length >= 2) {
-            return `${v.substring(0, 2)}/${v.substring(2, 4)}`;
-        }
-        return v;
-    };
+    // Load Razorpay Script
+    useEffect(() => {
+        const loadScript = () => {
+            if (document.getElementById("razorpay-script")) return;
+            const script = document.createElement("script");
+            script.id = "razorpay-script";
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.async = true;
+            document.body.appendChild(script);
+        };
+        loadScript();
+    }, []);
 
     const handlePayment = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Basic validation
-        if (cardNumber.replace(/\s/g, '').length < 16) {
-            error("Please enter a valid 16-digit card number.");
-            return;
-        }
-        if (expiry.length < 5) {
-            error("Please enter a valid expiry date (MM/YY).");
-            return;
-        }
-        if (cvv.length < 3) {
-            error("Please enter a valid CVV.");
-            return;
-        }
-
         setLoading(true);
+
         try {
-            // Simulate Payment Gateway Processing Delay
-            await new Promise(r => setTimeout(r, 2000));
+            // 1. Create order on backend
+            const orderRes = await fetch('/api/checkout/razorpay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: total })
+            });
 
-            // Randomly Generate a Mock Transaction ID (simulating Stripe/Razorpay)
-            const mockTransactionId = `txn_${Math.random().toString(36).substr(2, 9)}_${Date.now()}`;
+            const orderData = await orderRes.json();
 
-            success("Payment processed securely!");
-            await onSubmit(mockTransactionId);
-        } catch (err) {
-            error("Payment processing failed. Please try again.");
+            if (!orderRes.ok) {
+                throw new Error(orderData.error || "Failed to create payment order");
+            }
+
+            // 2. Initialize Razorpay options
+            const options = {
+                key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock", // Fallback for dev without keys
+                amount: orderData.amount,
+                currency: orderData.currency || "INR",
+                name: "Yogam Organic Farms",
+                description: "Purchase from Yogam Organic Farms",
+                order_id: orderData.id,
+                handler: async function (response: any) {
+                    try {
+                        // 3. Verify Payment
+                        const verifyRes = await fetch('/api/checkout/verify', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature
+                            })
+                        });
+
+                        const verifyData = await verifyRes.json();
+                        
+                        if (verifyData.verified) {
+                            const result = await onSubmit(response.razorpay_payment_id || response.razorpay_order_id);
+                            if (result.success) {
+                                success("Payment processed successfully!");
+                            } else {
+                                error(result.error || "Failed to process order.");
+                                setLoading(false);
+                            }
+                        } else {
+                            error("Payment verification failed. Please contact support.");
+                            setLoading(false);
+                        }
+                    } catch (err: any) {
+                        console.error("Verification or submission error:", err);
+                        error(err.message || "Payment verification failed.");
+                        setLoading(false);
+                    }
+                },
+                prefill: {
+                    name: "Customer", // This can be dynamically populated from context later
+                    email: "customer@example.com",
+                    contact: "9999999999"
+                },
+                theme: {
+                    color: "#30e87a"
+                },
+                modal: {
+                    ondismiss: function() {
+                        setLoading(false);
+                    }
+                }
+            };
+
+            // If we're using mock endpoints (no keys), we can simulate a success
+            if (orderData.id.startsWith("order_mock_")) {
+                const result = await onSubmit(`pay_mock_${Date.now()}`);
+                if (result.success) {
+                    success("Payment processed via mock gateway!");
+                } else {
+                    error(result.error || "Failed to process order.");
+                    setLoading(false);
+                }
+            } else {
+                const rzp = new (window as any).Razorpay(options);
+                rzp.on('payment.failed', function (response: any) {
+                    error(response.error.description);
+                    setLoading(false);
+                });
+                rzp.open();
+            }
+
+        } catch (err: any) {
+            console.error("Payment initiation failed:", err);
+            error(err.message || "Payment initiation failed. Please try again.");
             setLoading(false);
         }
     };
@@ -82,82 +133,25 @@ export function CheckoutPaymentForm({ onBack, onSubmit }: CheckoutPaymentFormPro
                     <h2 className="text-3xl font-bold tracking-tight text-white mb-1">Secure Payment</h2>
                     <p className="text-[#9db8a8] text-sm flex items-center gap-1">
                         <ShieldCheck className="w-4 h-4 text-[#30e87a]" />
-                        Encrypted and secure via NextAuth & SSL
+                        100% Encrypted via Razorpay
                     </p>
                 </div>
             </div>
 
-            <div className="bg-[#1c2e24]/50 border border-[#30e87a]/20 p-6 rounded-xl space-y-5 relative overflow-hidden">
-                {/* Visual Flair */}
-                <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
+            {/* Total Amount Display */}
+            <div className="bg-[#30e87a]/10 border border-[#30e87a]/20 px-6 py-4 rounded-xl flex justify-between items-center">
+                <span className="text-[#9db8a8] font-medium">Amount to Pay</span>
+                <span className="text-2xl font-bold text-white tracking-tight">₹{total.toFixed(2)}</span>
+            </div>
+
+            <div className="bg-[#1c2e24]/50 border border-[#30e87a]/20 p-6 rounded-xl space-y-5 relative overflow-hidden flex flex-col items-center justify-center min-h-[200px]">
+                 <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
                     <Lock className="w-32 h-32" />
                 </div>
-
-                {/* Name on Card */}
-                <label className="flex flex-col flex-1 relative z-10">
-                    <span className="text-sm font-medium text-white mb-2">Name on Card</span>
-                    <input
-                        className="w-full h-12 px-4 rounded-xl bg-[#131f18] border border-[#2d4035] text-white placeholder-[#9db8a8]/50 focus:ring-2 focus:ring-[#30e87a] focus:border-[#30e87a] transition-all outline-none"
-                        placeholder="John Doe"
-                        required
-                        type="text"
-                        value={cardName}
-                        onChange={(e) => setCardName(e.target.value)}
-                    />
-                </label>
-
-                {/* Card Number */}
-                <label className="flex flex-col flex-1 relative z-10">
-                    <span className="text-sm font-medium text-white mb-2">Card Number</span>
-                    <div className="relative">
-                        <input
-                            className="w-full h-12 px-4 pl-12 rounded-xl bg-[#131f18] border border-[#2d4035] text-white placeholder-[#9db8a8]/50 focus:ring-2 focus:ring-[#30e87a] focus:border-[#30e87a] transition-all outline-none font-mono tracking-widest"
-                            placeholder="0000 0000 0000 0000"
-                            required
-                            type="text"
-                            maxLength={19}
-                            value={cardNumber}
-                            onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
-                        />
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#9db8a8]">
-                            {/* Generic Credit Card Icon SVG */}
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <rect x="2" y="5" width="20" height="14" rx="2" />
-                                <line x1="2" y1="10" x2="22" y2="10" />
-                            </svg>
-                        </div>
-                    </div>
-                </label>
-
-                <div className="grid grid-cols-2 gap-4 relative z-10">
-                    {/* Expiry */}
-                    <label className="flex flex-col flex-1">
-                        <span className="text-sm font-medium text-white mb-2">Expiry Date</span>
-                        <input
-                            className="w-full h-12 px-4 rounded-xl bg-[#131f18] border border-[#2d4035] text-white placeholder-[#9db8a8]/50 focus:ring-2 focus:ring-[#30e87a] focus:border-[#30e87a] transition-all outline-none font-mono"
-                            placeholder="MM/YY"
-                            required
-                            type="text"
-                            maxLength={5}
-                            value={expiry}
-                            onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-                        />
-                    </label>
-
-                    {/* CVV */}
-                    <label className="flex flex-col flex-1">
-                        <span className="text-sm font-medium text-white mb-2">CVV</span>
-                        <input
-                            className="w-full h-12 px-4 rounded-xl bg-[#131f18] border border-[#2d4035] text-white placeholder-[#9db8a8]/50 focus:ring-2 focus:ring-[#30e87a] focus:border-[#30e87a] transition-all outline-none font-mono"
-                            placeholder="123"
-                            required
-                            type="password"
-                            maxLength={4}
-                            value={cvv}
-                            onChange={(e) => setCvv(e.target.value.replace(/\D/g, ''))}
-                        />
-                    </label>
-                </div>
+                
+                <p className="text-[#9db8a8] text-center max-w-md relative z-10">
+                    You will be securely redirected to Razorpay to complete your payment. All major credit cards, UPI, and net banking are supported.
+                </p>
             </div>
 
             {/* Navigation Buttons */}
@@ -184,7 +178,7 @@ export function CheckoutPaymentForm({ onBack, onSubmit }: CheckoutPaymentFormPro
                     ) : (
                         <>
                             <Lock className="w-4 h-4" />
-                            Pay Now
+                            Pay ₹{total.toFixed(2)}
                         </>
                     )}
                 </button>

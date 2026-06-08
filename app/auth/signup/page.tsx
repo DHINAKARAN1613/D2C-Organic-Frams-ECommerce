@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Mail, Lock, User, ArrowRight, Loader2, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Loader2, CheckCircle2, Check } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { motion, Variants } from 'framer-motion';
+import { useToast } from '@/context/ToastContext';
 
 export default function SignUpPage() {
     const router = useRouter();
@@ -17,6 +18,7 @@ export default function SignUpPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [agreed, setAgreed] = useState(false);
     const [isFarmer, setIsFarmer] = useState(false);
+    const { success, error } = useToast();
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -30,12 +32,12 @@ export default function SignUpPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!agreed) {
-            alert("Please agree to the Terms and Privacy Policy.");
+            error("Please agree to the Terms and Privacy Policy.");
             return;
         }
 
         if (formData.password !== formData.confirmPassword) {
-            alert("Passwords do not match!");
+            error("Passwords do not match!");
             return;
         }
 
@@ -59,10 +61,10 @@ export default function SignUpPage() {
             }
 
             // Success
-            alert("Account created successfully! Redirecting to login...");
+            success("Account created successfully! Redirecting to login...");
             router.push('/auth/signin');
-        } catch (error: any) {
-            alert(error.message);
+        } catch (err: any) {
+            error(err.message);
         } finally {
             setIsLoading(false);
         }
@@ -140,7 +142,7 @@ export default function SignUpPage() {
                                 <User className="w-5 h-5 relative z-10" />
                             </div>
                             <input
-                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
+                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-[#9db8a8]/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
                                 id="name"
                                 placeholder="Jane Apple"
                                 type="text"
@@ -159,7 +161,7 @@ export default function SignUpPage() {
                                 <Mail className="w-5 h-5 relative z-10" />
                             </div>
                             <input
-                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
+                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-[#9db8a8]/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
                                 id="email"
                                 placeholder="name@example.com"
                                 type="email"
@@ -178,7 +180,7 @@ export default function SignUpPage() {
                                 <Lock className="w-5 h-5 relative z-10" />
                             </div>
                             <input
-                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
+                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-[#9db8a8]/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
                                 id="password"
                                 placeholder="••••••••"
                                 type="password"
@@ -197,7 +199,7 @@ export default function SignUpPage() {
                                 <CheckCircle2 className="w-5 h-5 relative z-10" />
                             </div>
                             <input
-                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
+                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-[#9db8a8]/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
                                 id="confirmPassword"
                                 placeholder="••••••••"
                                 type="password"
@@ -216,9 +218,9 @@ export default function SignUpPage() {
                                 id="isFarmer"
                                 checked={isFarmer}
                                 onChange={(e) => setIsFarmer(e.target.checked)}
-                                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-border bg-background checked:border-primary checked:bg-primary transition-all"
+                                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-border bg-background checked:border-[#30e87a] checked:bg-[#30e87a] transition-all"
                             />
-                            <CheckCircle2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-primary-foreground opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                            <Check className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#112117] opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity stroke-[3]" />
                         </div>
                         <label htmlFor="isFarmer" className="text-sm text-foreground cursor-pointer select-none font-medium">
                             I want to sell my products as a <span className="font-bold text-primary">Farmer</span>
@@ -233,9 +235,9 @@ export default function SignUpPage() {
                                 id="terms"
                                 checked={agreed}
                                 onChange={(e) => setAgreed(e.target.checked)}
-                                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-border bg-background checked:border-primary checked:bg-primary transition-all"
+                                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-border bg-background checked:border-[#30e87a] checked:bg-[#30e87a] transition-all"
                             />
-                            <CheckCircle2 className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-primary-foreground opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity" />
+                            <Check className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#112117] opacity-0 peer-checked:opacity-100 pointer-events-none transition-opacity stroke-[3]" />
                         </div>
                         <label htmlFor="terms" className="text-sm text-muted-foreground cursor-pointer select-none">
                             I agree to the <a href="#" className="font-bold text-foreground hover:text-primary hover:underline transition-colors">Terms of Service</a> and <a href="#" className="font-bold text-foreground hover:text-primary hover:underline transition-colors">Privacy Policy</a>.

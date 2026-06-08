@@ -2,22 +2,26 @@
 
 import { useState } from 'react';
 import { Trash2, Loader2, AlertTriangle } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
 import { deleteProduct } from '@/app/admin/products/actions';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function DeleteProductButton({ productId }: { productId: string }) {
     const [isConfirming, setIsConfirming] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const { error, success } = useToast();
 
     const handleDelete = async () => {
         setIsDeleting(true);
         const res = await deleteProduct(productId);
-        if (!res.success) {
-            alert(res.error || 'Failed to delete product');
+        if (res.error) {
+            error(res.error || 'Failed to delete product');
             setIsDeleting(false);
-            setIsConfirming(false);
+            return;
         }
-        // If success, server action revalidates path, component might unmount or list updates
+        success('Product deleted successfully');
+        setIsConfirming(false);
+        setIsDeleting(false);
     };
 
     return (

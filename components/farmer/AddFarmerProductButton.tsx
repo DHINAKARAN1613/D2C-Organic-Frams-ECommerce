@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useToast } from '@/context/ToastContext';
 import { Plus, X, Loader2 } from 'lucide-react';
 import { createFarmerProduct } from '@/app/farmer/products/actions';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export function AddFarmerProductButton() {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const { error, success } = useToast();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -19,8 +21,9 @@ export function AddFarmerProductButton() {
 
         if (res.success) {
             setIsOpen(false);
+            success('Product created successfully');
         } else {
-            alert('Failed to create product');
+            error('Failed to create product');
         }
     }
 
@@ -99,10 +102,12 @@ export function AddFarmerProductButton() {
                                                         if (data.success) {
                                                             const input = document.getElementsByName('image')[0] as HTMLInputElement;
                                                             if (input) input.value = data.url;
+                                                        } else {
+                                                            error('Upload failed');
                                                         }
                                                     } catch (err) {
                                                         console.error(err);
-                                                        alert('Upload failed');
+                                                        error('Upload failed');
                                                     } finally {
                                                         setIsLoading(false);
                                                     }

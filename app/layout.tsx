@@ -31,8 +31,10 @@ import SessionProvider from "@/components/SessionProvider";
 import { CartProvider } from "@/context/CartContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { WishlistProvider } from "@/context/WishlistContext";
+import { LanguageProvider } from "@/context/LanguageContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import ClientLayoutWrapper from "@/components/ClientLayoutWrapper";
+import { CustomerChatWidget } from "@/components/chat/CustomerChatWidget";
 
 export default function RootLayout({
   children,
@@ -45,24 +47,27 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${splineSans.variable} antialiased min-h-screen flex flex-col bg-background text-foreground font-sans overflow-x-hidden`}
       >
         <SessionProvider>
-          <CartProvider>
-            <ToastProvider>
-              <WishlistProvider>
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="dark"
-                  forcedTheme="dark"
-                  enableSystem={false}
-                  disableTransitionOnChange
-                >
-                  <ClientLayoutWrapper>
-                    {children}
-                  </ClientLayoutWrapper>
-                  <CartDrawer />
-                </ThemeProvider>
-              </WishlistProvider>
-            </ToastProvider>
-          </CartProvider>
+          <LanguageProvider>
+            <CartProvider>
+              <ToastProvider>
+                <WishlistProvider>
+                  <ThemeProvider
+                    attribute="class"
+                    defaultTheme="dark"
+                    forcedTheme="dark"
+                    enableSystem={false}
+                    disableTransitionOnChange
+                  >
+                    <ClientLayoutWrapper>
+                      {children}
+                    </ClientLayoutWrapper>
+                    <CartDrawer />
+                    <CustomerChatWidget />
+                  </ThemeProvider>
+                </WishlistProvider>
+              </ToastProvider>
+            </CartProvider>
+          </LanguageProvider>
         </SessionProvider>
       </body>
     </html>

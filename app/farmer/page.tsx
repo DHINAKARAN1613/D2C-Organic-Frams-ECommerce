@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { Package, TrendingUp } from 'lucide-react';
+import WeatherWidget from '@/components/farmer/WeatherWidget';
 
 export default async function FarmerDashboard() {
     const session = await getServerSession(authOptions);
@@ -43,6 +44,13 @@ export default async function FarmerDashboard() {
                     <p className="text-[#9db8a8] text-sm font-semibold mb-1">Total Sales</p>
                     <h3 className="text-3xl font-black text-white">₹0</h3>
                     <p className="text-xs text-secondary-text mt-1">Feature coming soon</p>
+                </div>
+            </div>
+
+            {/* Weather & Tools Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+                <div className="lg:col-span-2">
+                    <WeatherWidget />
                 </div>
             </div>
         </div>

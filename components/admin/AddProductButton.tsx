@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { Plus, X, Loader2 } from 'lucide-react';
+import { useToast } from '@/context/ToastContext';
 import { createProduct } from '@/app/admin/products/actions';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function AddProductButton() {
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const { error, success } = useToast();
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -19,9 +21,9 @@ export function AddProductButton() {
 
         if (res.success) {
             setIsOpen(false);
-            // Optionally show toast
+            success('Product created successfully');
         } else {
-            alert('Failed to create product');
+            error('Failed to create product');
         }
     }
 
@@ -101,10 +103,12 @@ export function AddProductButton() {
                                                             // Set the hidden input value
                                                             const input = document.getElementsByName('image')[0] as HTMLInputElement;
                                                             if (input) input.value = data.url;
+                                                        } else {
+                                                            error('Upload failed');
                                                         }
                                                     } catch (err) {
                                                         console.error(err);
-                                                        alert('Upload failed');
+                                                        error('Upload failed');
                                                     } finally {
                                                         setIsLoading(false);
                                                     }
