@@ -3,7 +3,7 @@ import { authOptions } from '@/lib/auth';
 import { redirect, notFound } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import Link from 'next/link';
-import { ArrowLeft, Package, MapPin, Calendar, CreditCard, ChevronRight, ClipboardList, PackageSearch, Truck, CheckCircle2, XCircle } from 'lucide-react';
+import { ArrowLeft, Package, MapPin, Calendar, CreditCard, ChevronRight, ClipboardList, PackageSearch, Truck, CheckCircle2, XCircle, MessageSquare } from 'lucide-react';
 import Image from 'next/image';
 import { getImageUrl } from '@/lib/imageUtils';
 
@@ -22,7 +22,11 @@ export default async function OrderDetailPage(props: { params: Promise<{ id: str
         include: {
             items: {
                 include: {
-                    product: true
+                    product: {
+                        include: {
+                            farmer: true
+                        }
+                    }
                 }
             }
         }
@@ -201,11 +205,27 @@ export default async function OrderDetailPage(props: { params: Promise<{ id: str
                                     </div>
                                     <div className="flex-1">
                                         <h3 className="font-bold text-white">{item.product.name}</h3>
-                                        <p className="text-sm text-[#9db8a8]">Unit: {item.product.unit}</p>
+                                        {item.product.farmer && (
+                                            <p className="text-xs text-[#30e87a] mt-0.5">
+                                                Sold by: {item.product.farmer.name || 'Farmer'}
+                                            </p>
+                                        )}
+                                        <p className="text-sm text-[#9db8a8] mt-1">Unit: {item.product.unit}</p>
                                         <div className="mt-2 flex items-center justify-between">
                                             <span className="text-sm text-[#9db8a8]">Qty: <span className="text-white font-medium">{item.quantity}</span></span>
                                             <span className="font-bold text-white">₹{item.price.toFixed(2)}</span>
                                         </div>
+                                        {item.product.farmerId && (
+                                            <div className="mt-3 pt-3 border-t border-[#2d4035]">
+                                                <Link 
+                                                    href={`/profile/messages?farmerId=${item.product.farmerId}`}
+                                                    className="inline-flex items-center text-xs font-bold text-[#112117] bg-[#30e87a] px-3 py-1.5 rounded-full hover:bg-[#25c465] transition-colors"
+                                                >
+                                                    <MessageSquare className="w-3 h-3 mr-1.5" />
+                                                    Chat with Seller
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             ))}

@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { ShoppingBag, Search, Menu, User, Leaf } from 'lucide-react';
 import { Button } from './ui/Button';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserNav } from './UserNav';
 import { useCart } from '@/context/CartContext';
@@ -29,8 +29,27 @@ export function Navbar() {
     // Calculate total items
     const itemsCount = items.reduce((acc, item) => acc + item.quantity, 0);
 
+    const [isScrolled, setIsScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 20) {
+                setIsScrolled(true);
+            } else {
+                setIsScrolled(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     return (
-        <header className="fixed top-0 z-50 w-full bg-transparent transition-all duration-300">
+        <header className={`fixed top-0 z-50 w-full transition-all duration-300 ${
+            isScrolled 
+                ? 'bg-[#112117]/95 backdrop-blur-md border-b border-[#2d4035] py-0' 
+                : 'bg-transparent py-2'
+        }`}>
             <div className="max-w-[1280px] mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-4">
                 {/* Logo */}
                 <Link href="/" className="relative flex items-center gap-2 group">

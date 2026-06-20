@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShoppingBag, Package, Users, BarChart3, Settings, Leaf, LogOut, User, MessageSquare } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Package, Users, BarChart3, Settings, Leaf, LogOut, User, MessageSquare, Store } from 'lucide-react';
 import { Session } from 'next-auth';
 
 const MENU_ITEMS = [
@@ -10,6 +10,7 @@ const MENU_ITEMS = [
     { name: 'Products', icon: Package, href: '/admin/products' },
     { name: 'Orders', icon: ShoppingBag, href: '/admin/orders' },
     { name: 'Customers', icon: Users, href: '/admin/customers' },
+    { name: 'Farmers / KYC', icon: Store, href: '/admin/farmers' },
     { name: 'Analytics', icon: BarChart3, href: '/admin/analytics' },
     { name: 'Support', icon: MessageSquare, href: '/admin/support' },
 ];

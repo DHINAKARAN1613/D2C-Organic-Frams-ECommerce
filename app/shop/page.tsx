@@ -9,6 +9,9 @@ export const metadata = {
 
 export default async function ShopPage() {
     const dbProducts = await prisma.product.findMany({
+        where: {
+            farmerId: { not: null }
+        },
         include: {
             category: true,
             farmer: true
@@ -34,5 +37,11 @@ export default async function ShopPage() {
         badgeColor: null
     }));
 
-    return <ShopClient initialProducts={products} />;
+    const dbCategories = await prisma.category.findMany({
+        orderBy: { name: 'asc' }
+    });
+    
+    const categoryNames = ["All", ...dbCategories.map(c => c.name)];
+
+    return <ShopClient initialProducts={products} categories={categoryNames} />;
 }

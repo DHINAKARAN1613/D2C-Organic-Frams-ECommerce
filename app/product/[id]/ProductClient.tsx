@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { getImageUrl } from '@/lib/imageUtils';
 import {
     Star,
     Minus,
@@ -14,13 +15,16 @@ import {
     Globe,
     Truck,
     ShieldCheck,
-    PlayCircle
+    PlayCircle,
+    MapPin,
+    TrendingUp,
+    CheckCircle2,
+    Store
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { WishlistButton } from '@/components/ui/WishlistButton';
 import { ProductReviews } from '@/components/product/ProductReviews';
-import { PRODUCTS } from '@/lib/data'; // For related products fallback
 
 const IconMap = {
     public: Globe,
@@ -29,7 +33,7 @@ const IconMap = {
     verified: ShieldCheck
 } as any;
 
-export function ProductClient({ product, reviews, isLoggedIn }: { product: any, reviews: any[], isLoggedIn: boolean }) {
+export function ProductClient({ product, reviews, relatedProducts, isLoggedIn }: { product: any, reviews: any[], relatedProducts: any[], isLoggedIn: boolean }) {
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState('standard');
     const { addItem } = useCart();
@@ -56,20 +60,6 @@ export function ProductClient({ product, reviews, isLoggedIn }: { product: any, 
         fetchRecommendations();
     }, [product?.id]);
     // END: True AI Recommendations
-
-    // START: Hydration Fix & Deterministic Randomization
-    const [relatedProducts, setRelatedProducts] = useState(PRODUCTS.slice(0, 4));
-
-    useEffect(() => {
-        if (product?.id) {
-            setRelatedProducts(
-                PRODUCTS.filter(p => p.id !== product.id)
-                    .sort(() => 0.5 - Math.random())
-                    .slice(0, 4)
-            );
-        }
-    }, [product?.id]);
-    // END: Hydration Fix
 
     if (!product) {
         return (
@@ -186,6 +176,43 @@ export function ProductClient({ product, reviews, isLoggedIn }: { product: any, 
                             {product.description}
                         </p>
 
+                        {/* Seller Details Card */}
+                        {product.farmer && (
+                            <div className="bg-surface border border-border rounded-2xl p-5 mb-8 flex flex-col gap-4">
+                                <h3 className="font-bold text-foreground flex items-center gap-2">
+                                    <Store className="w-5 h-5 text-primary" />
+                                    Seller Profile
+                                </h3>
+                                <div className="flex items-center justify-between flex-wrap gap-4">
+                                    <div className="flex items-center gap-4">
+                                        <div className="relative size-14 rounded-full overflow-hidden border border-border">
+                                            <Image src={product.farmer.image} alt={product.farmer.name} fill className="object-cover" />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center gap-1.5">
+                                                <p className="font-bold text-lg text-foreground">{product.farmer.name}</p>
+                                                {product.farmer.isVerified && (
+                                                    <span title="Verified Farmer" className="flex items-center">
+                                                        <CheckCircle2 className="w-4 h-4 text-primary fill-primary/20" />
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-muted-foreground flex items-center gap-1 mt-0.5">
+                                                <MapPin className="w-3 h-3" /> {product.farmer.location}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-col items-end">
+                                        <div className="flex items-center gap-1.5 bg-primary/10 text-primary px-3 py-1.5 rounded-full border border-primary/20">
+                                            <TrendingUp className="w-4 h-4" />
+                                            <span className="font-bold text-sm">{product.farmer.successRate}% Success Rate</span>
+                                        </div>
+                                        <p className="text-xs text-muted-foreground mt-1 text-right">Based on completed deliveries</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Options */}
                         <div className="space-y-6 mb-8 border-t border-b border-border py-6">
                             {/* Size Selector */}
@@ -288,7 +315,7 @@ export function ProductClient({ product, reviews, isLoggedIn }: { product: any, 
                                 <Link href={`/product/${p.id}`} key={p.id} className="flex gap-4 p-4 rounded-xl hover:bg-surface border border-transparent hover:border-border transition-all">
                                     <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 border border-border/50 bg-background">
                                         <Image
-                                            src={p.images ? (p.images.includes(',') ? p.images.split(',')[0] : p.images) : '/placeholder.png'}
+                                            src={getImageUrl(p.images) || '/placeholder.png'}
                                             alt={p.name}
                                             fill
                                             className="object-cover"

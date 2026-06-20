@@ -6,6 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "start:cluster": "pm2 start ecosystem.config.js",
+    "stop:cluster": "pm2 stop ecosystem.config.js",
+    "monitor:cluster": "pm2 monit",
     "lint": "eslint",
     "postinstall": "prisma generate"
   },
@@ -20,6 +23,7 @@
     "@types/nodemailer": "^8.0.0",
     "bcryptjs": "^3.0.3",
     "clsx": "^2.1.1",
+    "docx": "^9.7.1",
     "framer-motion": "^12.23.26",
     "lucide-react": "^0.560.0",
     "next": "16.0.10",
@@ -43,6 +47,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
+    "pm2": "^7.0.1",
     "tailwindcss": "^4",
     "tsx": "^4.21.0",
     "typescript": "^5"

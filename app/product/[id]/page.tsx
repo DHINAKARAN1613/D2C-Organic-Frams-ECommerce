@@ -3,7 +3,7 @@ import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { ProductClient } from './ProductClient';
 import { getImageUrl } from '@/lib/imageUtils';
-import { PRODUCTS } from '@/lib/data'; // For fallback
+import { notFound } from 'next/navigation';
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
@@ -27,45 +27,85 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         }
     });
 
-    let productProps = null;
-    let reviews: any[] = [];
+    if (!dbProduct || !dbProduct.farmerId) {
+        notFound();
+    }
 
-    if (dbProduct) {
-        productProps = {
-            id: dbProduct.id,
-            name: dbProduct.name,
-            description: dbProduct.description,
-            price: dbProduct.price,
-            originalPrice: dbProduct.originalPrice,
-            image: getImageUrl(dbProduct.images) || '/placeholder.png',
-            images: dbProduct.images,
-            stock: dbProduct.stock,
-            category: dbProduct.category.name,
-            unit: dbProduct.unit,
-            outOfStock: dbProduct.stock <= 0,
-            rating: 5.0, // Calculated in client
-            badge: null,
-            badgeColor: null,
-            details: `1 ${dbProduct.unit}`,
-            attributes: [
-                { icon: 'public', label: 'Origin', value: 'Local Sustainable Farm' },
-                { icon: 'eco', label: 'Certification', value: '100% Organic' }
-            ]
-        };
-        reviews = dbProduct.reviews;
-    } else {
-        // Fallback to static data if not found in DB (e.g. for old IDs)
-        const staticProduct = PRODUCTS.find(p => p.id === id);
-        if (staticProduct) {
-            productProps = staticProduct;
-            reviews = []; // Static products have no dynamic reviews yet
+    // Fetch related products (other products with farmers)
+    const relatedDb = await prisma.product.findMany({
+        where: { 
+            farmerId: { not: null },
+            id: { not: id } 
+        },
+        take: 4,
+        orderBy: { createdAt: 'desc' }
+    });
+
+    const relatedProducts = relatedDb.map(p => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        price: p.price,
+        originalPrice: p.originalPrice,
+        image: getImageUrl(p.images) || '/placeholder.png'
+    }));
+
+    // Calculate real-time farmer success rate based on actual Orders
+    let actualSuccessRate = dbProduct.farmer?.isVerifiedFarmer ? 99 : (dbProduct.farmer?.kycStatus === 'VERIFIED' ? 95 : 85); // Default fallbacks
+    
+    if (dbProduct.farmerId) {
+        const farmerOrders = await prisma.order.findMany({
+            where: {
+                items: {
+                    some: { product: { farmerId: dbProduct.farmerId } }
+                },
+                status: { in: ['DELIVERED', 'CANCELLED', 'RETURNED'] } // Only count completed/failed orders
+            },
+            select: { status: true }
+        });
+
+        const totalResolved = farmerOrders.length;
+        if (totalResolved > 0) {
+            const successfulDeliveries = farmerOrders.filter(o => o.status === 'DELIVERED').length;
+            actualSuccessRate = Math.round((successfulDeliveries / totalResolved) * 100);
         }
     }
+
+    const productProps = {
+        id: dbProduct.id,
+        name: dbProduct.name,
+        description: dbProduct.description,
+        price: dbProduct.price,
+        originalPrice: dbProduct.originalPrice,
+        image: getImageUrl(dbProduct.images) || '/placeholder.png',
+        images: dbProduct.images,
+        stock: dbProduct.stock,
+        category: dbProduct.category.name,
+        unit: dbProduct.unit,
+        outOfStock: dbProduct.stock <= 0,
+        rating: 5.0, // Calculated in client
+        farmer: dbProduct.farmer ? {
+            id: dbProduct.farmer.id,
+            name: dbProduct.farmer.name || 'Anonymous Farmer',
+            image: getImageUrl(dbProduct.farmer.image) || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Farmer',
+            location: dbProduct.farmer.farmAddress || 'Local Farm',
+            isVerified: dbProduct.farmer.isVerifiedFarmer,
+            successRate: actualSuccessRate
+        } : null,
+        badge: null,
+        badgeColor: null,
+        details: `1 ${dbProduct.unit}`,
+        attributes: [
+            { icon: 'public', label: 'Origin', value: 'Local Sustainable Farm' },
+            { icon: 'eco', label: 'Certification', value: '100% Organic' }
+        ]
+    };
 
     return (
         <ProductClient 
             product={productProps} 
-            reviews={reviews} 
+            reviews={dbProduct.reviews} 
+            relatedProducts={relatedProducts}
             isLoggedIn={isLoggedIn} 
         />
     );

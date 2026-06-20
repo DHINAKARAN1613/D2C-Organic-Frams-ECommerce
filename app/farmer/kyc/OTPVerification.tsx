@@ -50,8 +50,17 @@ export default function OTPVerification({ user }: { user: any }) {
                 body: JSON.stringify({ type })
             });
             if (!res.ok) throw new Error(await res.text());
+            
+            const data = await res.json();
             setStatus('SENT');
-            success('OTP Sent! Check the server terminal to see the simulated dispatch.');
+            
+            if (data.devCode) {
+                if (type === 'EMAIL') setEmailCode(data.devCode);
+                else setPhoneCode(data.devCode);
+                success(`[DEV MODE] OTP Auto-filled: ${data.devCode}`);
+            } else {
+                success('OTP Sent! Check the server terminal to see the simulated dispatch.');
+            }
         } catch (err: any) {
             setError(err.message);
             setStatus('IDLE');

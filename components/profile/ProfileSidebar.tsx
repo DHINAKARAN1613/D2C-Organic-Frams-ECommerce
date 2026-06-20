@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, ShoppingBag, MapPin, LogOut, Heart } from "lucide-react";
+import { User, ShoppingBag, MapPin, LogOut, Heart, MessageSquare } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 const items = [
@@ -15,6 +15,11 @@ const items = [
         title: "My Orders",
         href: "/profile/orders",
         icon: ShoppingBag,
+    },
+    {
+        title: "Messages",
+        href: "/profile/messages",
+        icon: MessageSquare,
     },
     {
         title: "My Wishlist",

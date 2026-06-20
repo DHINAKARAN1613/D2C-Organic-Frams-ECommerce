@@ -2,9 +2,8 @@ import type { NextConfig } from "next";
 
 const nextConfig = {
 
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  reactStrictMode: true,
+  compress: true,
   images: {
     remotePatterns: [
       {
@@ -30,6 +29,36 @@ const nextConfig = {
         hostname: 'avatar.iran.liara.run',
         port: '',
         pathname: '/public/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'loremflickr.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'source.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.pexels.com',
+        port: '',
+        pathname: '/**',
       }
     ],
     dangerouslyAllowSVG: true,

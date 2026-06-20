@@ -18,12 +18,14 @@ export default function KYCForm() {
         const aadharNumber = formData.get('aadharNumber') as string;
         const aadharImage = formData.get('aadharImage') as string;
         const farmAddress = formData.get('farmAddress') as string;
+        const organicCertificate = formData.get('organicCertificate') as string;
+        const farmVideo = formData.get('farmVideo') as string;
 
         try {
             const res = await fetch('/api/farmer/kyc', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ aadharNumber, aadharImage, farmAddress })
+                body: JSON.stringify({ aadharNumber, aadharImage, farmAddress, organicCertificate, farmVideo })
             });
 
             if (!res.ok) {
@@ -110,6 +112,92 @@ export default function KYCForm() {
                     className="w-full bg-[#112117] border border-[#2d4035] rounded-lg p-3 text-white focus:outline-none focus:border-[#30e87a] resize-none"
                     placeholder="Enter the full address of your farm"
                 />
+            </div>
+
+            <div>
+                <label className="block text-xs font-semibold text-[#9db8a8] uppercase mb-1">Organic Certificate (NPOP/PGS-India)</label>
+                <div className="space-y-3">
+                    <input
+                        type="file"
+                        accept="image/*,application/pdf"
+                        required
+                        onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+
+                            setIsLoading(true);
+                            const formData = new FormData();
+                            formData.append('file', file);
+
+                            try {
+                                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                                const data = await res.json();
+                                if (data.success) {
+                                    const input = document.getElementsByName('organicCertificate')[0] as HTMLInputElement;
+                                    if (input) input.value = data.url;
+                                } else {
+                                    setError('Failed to upload certificate');
+                                }
+                            } catch (err) {
+                                setError('Failed to upload certificate');
+                            } finally {
+                                setIsLoading(false);
+                            }
+                        }}
+                        className="block w-full text-sm text-[#9db8a8] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#30e87a]/10 file:text-[#30e87a] hover:file:bg-[#30e87a]/20"
+                    />
+                    <input
+                        name="organicCertificate"
+                        required
+                        readOnly
+                        className="w-full bg-[#112117] border border-[#2d4035] rounded-lg p-3 text-[#9db8a8] focus:outline-none text-sm"
+                        placeholder="Certificate URL will appear here after upload"
+                    />
+                </div>
+            </div>
+
+            <div>
+                <label className="block text-xs font-semibold text-[#9db8a8] uppercase mb-1">Geo-Tagged Farm Walkthrough Video</label>
+                <div className="space-y-3">
+                    <input
+                        type="file"
+                        accept="video/*"
+                        capture="environment"
+                        required
+                        onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+
+                            setIsLoading(true);
+                            const formData = new FormData();
+                            formData.append('file', file);
+
+                            try {
+                                const res = await fetch('/api/upload', { method: 'POST', body: formData });
+                                const data = await res.json();
+                                if (data.success) {
+                                    const input = document.getElementsByName('farmVideo')[0] as HTMLInputElement;
+                                    if (input) input.value = data.url;
+                                } else {
+                                    setError('Failed to upload video');
+                                }
+                            } catch (err) {
+                                setError('Failed to upload video');
+                            } finally {
+                                setIsLoading(false);
+                            }
+                        }}
+                        className="block w-full text-sm text-[#9db8a8] file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#30e87a]/10 file:text-[#30e87a] hover:file:bg-[#30e87a]/20"
+                    />
+                    <input
+                        name="farmVideo"
+                        required
+                        readOnly
+                        className="w-full bg-[#112117] border border-[#2d4035] rounded-lg p-3 text-[#9db8a8] focus:outline-none text-sm"
+                        placeholder="Video URL will appear here after upload"
+                    />
+                    <p className="text-xs text-[#9db8a8]">Please capture a live, uncut 1-2 minute video of your farm and fertilizer storage.</p>
+                </div>
             </div>
 
             <button

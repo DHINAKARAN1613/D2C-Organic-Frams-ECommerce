@@ -12,9 +12,9 @@ export async function POST(req: Request) {
         }
 
         const body = await req.json();
-        const { aadharNumber, aadharImage, farmAddress } = body;
+        const { aadharNumber, aadharImage, farmAddress, organicCertificate, farmVideo } = body;
 
-        if (!aadharNumber || !aadharImage || !farmAddress) {
+        if (!aadharNumber || !aadharImage || !farmAddress || !organicCertificate || !farmVideo) {
             return new NextResponse('Missing required fields', { status: 400 });
         }
 
@@ -31,6 +31,8 @@ export async function POST(req: Request) {
                 aadharNumber,
                 aadharImage,
                 farmAddress,
+                organicCertificate,
+                farmVideo,
                 kycStatus: 'PENDING'
             }
         });

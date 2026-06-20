@@ -18,7 +18,7 @@ import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { ShopFilters } from './ShopFilters';
 import { WishlistButton } from '@/components/ui/WishlistButton';
-import { CATEGORIES } from '@/lib/data';
+// Removed static CATEGORIES import
 
 
 
@@ -28,7 +28,7 @@ import { CATEGORIES } from '@/lib/data';
 
 // ... (existing imports)
 
-export function ShopClient({ initialProducts }: { initialProducts: any[] }) {
+export function ShopClient({ initialProducts, categories }: { initialProducts: any[], categories: string[] }) {
     const { addItem, items } = useCart();
     const { success } = useToast();
     const [priceRange, setPriceRange] = useState(2500);
@@ -67,7 +67,7 @@ export function ShopClient({ initialProducts }: { initialProducts: any[] }) {
                     return 0; // Recommended (original order)
             }
         });
-    }, [selectedCategory, priceRange, inStockOnly, sortBy]);
+    }, [initialProducts, selectedCategory, priceRange, inStockOnly, sortBy]);
 
     const visibleProducts = filteredProducts.slice(0, visibleCount);
 
@@ -110,7 +110,7 @@ export function ShopClient({ initialProducts }: { initialProducts: any[] }) {
             {/* Sticky Sidebar (Filters) */}
             <aside className="hidden lg:block w-72 shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2 custom-scrollbar">
                 <ShopFilters
-                    categories={CATEGORIES}
+                    categories={categories}
                     inStockOnly={inStockOnly}
                     onReset={handleReset}
                     priceRange={priceRange}
@@ -149,7 +149,7 @@ export function ShopClient({ initialProducts }: { initialProducts: any[] }) {
                                 </button>
                             </div>
                             <ShopFilters
-                                categories={CATEGORIES}
+                                categories={categories}
                                 inStockOnly={inStockOnly}
                                 onReset={handleReset}
                                 priceRange={priceRange}

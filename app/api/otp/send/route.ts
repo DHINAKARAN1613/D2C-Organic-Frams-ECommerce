@@ -117,7 +117,11 @@ export async function POST(req: Request) {
             console.log(`=========================================\n`);
         }
 
-        return NextResponse.json({ success: true, message: 'OTP sent successfully' });
+        return NextResponse.json({ 
+            success: true, 
+            message: 'OTP sent successfully',
+            devCode: process.env.NODE_ENV !== 'production' ? code : undefined 
+        });
 
     } catch (error) {
         console.error('[OTP_SEND_POST]', error);

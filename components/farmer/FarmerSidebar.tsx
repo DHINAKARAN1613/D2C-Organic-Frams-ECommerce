@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, Leaf, LogOut, Store, ShoppingBag, BarChart3, ShieldCheck } from 'lucide-react';
+import { LayoutDashboard, Package, Leaf, LogOut, Store, ShoppingBag, BarChart3, ShieldCheck, MessageSquare } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { useLanguage } from '@/context/LanguageContext';
 import { LanguageToggle } from '@/components/ui/LanguageToggle';
@@ -16,6 +16,7 @@ export function FarmerSidebar() {
         { name: t.dashboard, icon: LayoutDashboard, href: '/farmer' },
         { name: t.products, icon: Package, href: '/farmer/products' },
         { name: t.orders, icon: ShoppingBag, href: '/farmer/orders' },
+        { name: 'Messages', icon: MessageSquare, href: '/farmer/messages' },
         { name: t.analytics, icon: BarChart3, href: '/farmer/analytics' },
         { name: 'Verification', icon: ShieldCheck, href: '/farmer/kyc' },
     ];

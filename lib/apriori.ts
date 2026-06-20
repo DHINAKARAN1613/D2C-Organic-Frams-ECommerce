@@ -10,16 +10,17 @@ export interface Rule {
     consequent: string; // The product to recommend
     support: number; // How often they appear together in total transactions
     confidence: number; // Probability of buying consequent given antecedent
+    lift: number; // NEW: Ratio of confidence to expected confidence. >1 means positive correlation.
 }
 
 /**
- * A practical implementation of the Apriori Algorithm for Market Basket Analysis.
- * Generates recommendation rules based on transaction history.
+ * An advanced implementation of the Apriori Algorithm for Market Basket Analysis.
+ * Generates recommendation rules based on transaction history, utilizing Support, Confidence, and Lift.
  *
  * @param transactions - An array of order transactions containing product IDs.
  * @param minSupport - The minimum frequency percentage (0-1) for an itemset to be considered.
  * @param minConfidence - The minimum probability (0-1) for a rule to be considered.
- * @returns Array of valid association rules.
+ * @returns Array of valid association rules sorted by Lift and Confidence.
  */
 export function generateAprioriRules(
     transactions: Transaction[],
@@ -69,31 +70,38 @@ export function generateAprioriRules(
             // Calculate confidence A -> B
             // Rule: If customer buys A, will they buy B?
             const confidenceAtoB = pairSupport / supportA;
+            const liftAtoB = confidenceAtoB / supportB;
+
             if (confidenceAtoB >= minConfidence) {
                 rules.push({
                     antecedent: itemA,
                     consequent: itemB,
                     support: pairSupport,
                     confidence: confidenceAtoB,
+                    lift: liftAtoB,
                 });
             }
 
             // Calculate confidence B -> A
             // Rule: If customer buys B, will they buy A?
             const confidenceBtoA = pairSupport / supportB;
+            const liftBtoA = confidenceBtoA / supportA;
+
             if (confidenceBtoA >= minConfidence) {
                 rules.push({
                     antecedent: itemB,
                     consequent: itemA,
                     support: pairSupport,
                     confidence: confidenceBtoA,
+                    lift: liftBtoA,
                 });
             }
         }
     }
 
-    // Sort rules by confidence descending
-    rules.sort((a, b) => b.confidence - a.confidence);
+    // Sort rules by Lift descending, then Confidence descending.
+    // Lift is the strongest indicator of a true cross-selling relationship.
+    rules.sort((a, b) => b.lift - a.lift || b.confidence - a.confidence);
 
     return rules;
 }
@@ -107,10 +115,14 @@ export function getRecommendationsForProduct(
     maxRecommendations: number = 3
 ): string[] {
     // Find all rules where the current product is the antecedent
-    const productRules = rules.filter((r) => r.antecedent === productId);
+    // and ideally the lift is > 1.0 (indicating a positive correlation)
+    const productRules = rules.filter((r) => r.antecedent === productId && r.lift > 1.0);
+    
+    // If we are too strict and get nothing, fallback to just any rule
+    const fallbackRules = productRules.length > 0 ? productRules : rules.filter((r) => r.antecedent === productId);
 
     // Extract the consequents (recommended products)
-    const recommendedProductIds = productRules.map((r) => r.consequent);
+    const recommendedProductIds = fallbackRules.map((r) => r.consequent);
 
     // Ensure uniqueness and limit to maxRecommendations
     const uniqueRecommendations = Array.from(new Set(recommendedProductIds));

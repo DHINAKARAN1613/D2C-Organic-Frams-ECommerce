@@ -47,9 +47,11 @@ model User {
   kycStatus         String    @default("UNVERIFIED") // UNVERIFIED, PENDING, VERIFIED, REJECTED
   aadharNumber      String?
   aadharImage       String?
-  farmAddress       String?
-  isVerifiedFarmer  Boolean   @default(false)
-  role              String    @default("USER")
+  farmAddress         String?
+  organicCertificate  String?
+  farmVideo           String?
+  isVerifiedFarmer    Boolean   @default(false)
+  role                String    @default("USER")
   accounts      Account[]
   sessions      Session[]
   orders        Order[]
@@ -58,7 +60,8 @@ model User {
   updatedAt DateTime @updatedAt
   wishlist      WishlistItem[]
   products      Product[]     @relation("FarmerProducts")
-  chatSessions  ChatSession[]
+  chatSessions  ChatSession[] @relation("UserChats")
+  farmerChats   ChatSession[] @relation("FarmerChats")
   messagesSent  Message[]
   reviews       Review[]
   otps          OTP[]
@@ -171,9 +174,11 @@ model WishlistItem {
 model ChatSession {
   id          String   @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User     @relation("UserChats", fields: [userId], references: [id], onDelete: Cascade)
+  farmerId    String?
+  farmer      User?    @relation("FarmerChats", fields: [farmerId], references: [id], onDelete: Cascade)
   status      String   @default("OPEN") // OPEN, CLOSED
-  isBotActive Boolean  @default(true) // True = Gemini replies, False = Admin taken over
+  isBotActive Boolean  @default(true) // True = Gemini replies, False = Admin/Farmer taken over
   messages    Message[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

@@ -57,6 +57,7 @@ export async function GET(request: Request) {
                 id: {
                     in: recommendedProductIds,
                 },
+                farmerId: { not: null },
                 // Optionally, ensure they are in stock
                 // stock: { gt: 0 }
             },

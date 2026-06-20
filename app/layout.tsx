@@ -19,8 +19,45 @@ const splineSans = Spline_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Yogam Organic Farms | Pure & Sustainable",
-  description: "Curated organic goods for a sustainable lifestyle.",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  title: {
+    default: "Yogam Organic Farms | Pure & Sustainable",
+    template: "%s | Yogam Organic Farms",
+  },
+  description: "Curated organic goods for a sustainable lifestyle. Connect directly with farmers for pure, 100% organic produce and essentials.",
+  keywords: ["organic", "farm", "fresh produce", "sustainable", "farmers market", "direct to consumer", "health", "Yogam"],
+  authors: [{ name: "Yogam Farms" }],
+  creator: "Yogam Farms",
+  publisher: "Yogam Farms",
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    title: "Yogam Organic Farms",
+    description: "Curated organic goods for a sustainable lifestyle.",
+    url: "/",
+    siteName: "Yogam Organic Farms",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Yogam Organic Farms",
+    description: "Curated organic goods for a sustainable lifestyle.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 import Link from "next/link"; // Ensure Link is imported if needed, though removed Navbar usage might make it unused here. 

@@ -13,7 +13,8 @@ export default function AboutPage() {
         <div className="bg-background min-h-screen">
             {/* Hero Section */}
             <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-                <div className="absolute inset-0 bg-green-900/20 z-10" />
+                {/* Dark Gradient Overlay for Navbar visibility */}
+                <div className="absolute inset-0 bg-gradient-to-b from-[#112117]/90 via-[#112117]/50 to-[#112117]/40 z-10" />
                 <div className="absolute inset-0">
                     <Image
                         src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=2940&auto=format&fit=crop"
