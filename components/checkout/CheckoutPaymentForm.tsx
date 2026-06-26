@@ -92,7 +92,7 @@ export function CheckoutPaymentForm({ onBack, onSubmit, total }: CheckoutPayment
                     contact: "9999999999"
                 },
                 theme: {
-                    color: "#30e87a"
+                    color: "#25b060"
                 },
                 modal: {
                     ondismiss: function() {
@@ -127,52 +127,52 @@ export function CheckoutPaymentForm({ onBack, onSubmit, total }: CheckoutPayment
     };
 
     return (
-        <form className="flex flex-col gap-6" onSubmit={handlePayment}>
+        <form className="flex flex-col gap-6 bg-surface border border-border p-6 sm:p-8 rounded-3xl shadow-sm" onSubmit={handlePayment}>
             <div className="flex justify-between items-center">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight text-white mb-1">Secure Payment</h2>
-                    <p className="text-[#9db8a8] text-sm flex items-center gap-1">
-                        <ShieldCheck className="w-4 h-4 text-[#30e87a]" />
+                    <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mb-1">Secure Payment</h2>
+                    <p className="text-muted-foreground text-sm flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-primary" />
                         100% Encrypted via Razorpay
                     </p>
                 </div>
             </div>
 
             {/* Total Amount Display */}
-            <div className="bg-[#30e87a]/10 border border-[#30e87a]/20 px-6 py-4 rounded-xl flex justify-between items-center">
-                <span className="text-[#9db8a8] font-medium">Amount to Pay</span>
-                <span className="text-2xl font-bold text-white tracking-tight">₹{total.toFixed(2)}</span>
+            <div className="bg-primary/10 border border-primary/20 px-6 py-4 rounded-2xl flex justify-between items-center">
+                <span className="text-muted-foreground font-semibold text-sm">Amount to Pay</span>
+                <span className="text-2xl font-extrabold text-foreground tracking-tight">₹{total.toFixed(2)}</span>
             </div>
 
-            <div className="bg-[#1c2e24]/50 border border-[#30e87a]/20 p-6 rounded-xl space-y-5 relative overflow-hidden flex flex-col items-center justify-center min-h-[200px]">
-                 <div className="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-                    <Lock className="w-32 h-32" />
+            <div className="bg-muted border border-border p-8 rounded-2xl space-y-4 relative overflow-hidden flex flex-col items-center justify-center min-h-[200px]">
+                 <div className="absolute top-0 right-0 p-4 opacity-5 text-foreground pointer-events-none">
+                    <Lock className="w-36 h-36" />
                 </div>
                 
-                <p className="text-[#9db8a8] text-center max-w-md relative z-10">
+                <p className="text-muted-foreground text-center text-sm max-w-md relative z-10 leading-relaxed">
                     You will be securely redirected to Razorpay to complete your payment. All major credit cards, UPI, and net banking are supported.
                 </p>
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 mt-8 pt-6 border-t border-[#2d4035]">
+            <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-4 mt-6 pt-6 border-t border-border">
                 <button
                     type="button"
                     onClick={onBack}
                     disabled={loading}
-                    className="flex items-center gap-2 text-[#9db8a8] hover:text-white transition-colors font-medium disabled:opacity-50"
+                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors font-medium text-sm disabled:opacity-50"
                 >
-                    <ArrowLeft className="w-5 h-5" />
+                    <ArrowLeft className="w-4 h-4" />
                     Back to Shipping
                 </button>
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full sm:w-auto h-12 px-8 bg-[#30e87a] hover:bg-[#25c464] text-[#112117] font-bold rounded-full transition-all shadow-lg shadow-[#30e87a]/20 flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                    className="w-full sm:w-auto h-12 px-8 bg-primary hover:opacity-90 text-primary-foreground font-extrabold rounded-full transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed text-sm"
                 >
                     {loading ? (
                         <>
-                            <Loader2 className="w-5 h-5 animate-spin" />
+                            <Loader2 className="w-4 h-4 animate-spin" />
                             Processing Securely...
                         </>
                     ) : (
