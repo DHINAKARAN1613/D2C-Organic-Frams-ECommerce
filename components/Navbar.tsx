@@ -52,7 +52,7 @@ export function Navbar() {
             isScrolled 
                 ? 'bg-surface/95 backdrop-blur-md border-b border-border py-0 text-foreground shadow-md' 
                 : pathname === '/'
-                    ? 'bg-gradient-to-b from-black/70 via-black/30 to-transparent backdrop-blur-[2px] border-b border-white/10 py-3 text-white'
+                    ? 'bg-gradient-to-b from-black/70 via-black/30 to-transparent backdrop-blur-[2px] border-b border-transparent py-3 text-white'
                     : 'bg-surface/85 backdrop-blur-md border-b border-border/60 py-2 text-foreground shadow-sm'
         }`}>
             <div className="max-w-[1280px] mx-auto px-4 md:px-8 h-20 flex items-center justify-between gap-4">
