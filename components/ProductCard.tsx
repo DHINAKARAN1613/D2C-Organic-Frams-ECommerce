@@ -36,12 +36,12 @@ export function ProductCard({ id, name, price, originalPrice, image, category, s
         <div
             suppressHydrationWarning
             className={`group flex flex-col rounded-3xl p-4 transition-all duration-300 border border-transparent hover:-translate-y-1
-            bg-[#1a2c20] text-white border-white/5 hover:border-[#30e87a]/50 hover:shadow-[0_8px_30px_rgb(0,255,0,0.1)]
+            bg-surface text-foreground border-border shadow-md shadow-black/5 dark:shadow-black/20 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/10
             ${isOutOfStock ? 'opacity-75 grayscale' : ''}`}
         >
             {/* Image Section - Clean & Centered */}
             <div className={`relative aspect-square mb-4 rounded-2xl overflow-hidden transition-colors 
-                bg-gray-50/50 dark:bg-white/5 group-hover:bg-gray-50 dark:group-hover:bg-white/10`}>
+                bg-background/80 dark:bg-white/5 group-hover:bg-background dark:group-hover:bg-white/10`}>
                 <Image
                     src={image}
                     alt={name}
@@ -56,8 +56,8 @@ export function ProductCard({ id, name, price, originalPrice, image, category, s
                 </div>
 
                 {isOutOfStock && (
-                    <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm bg-white/50 dark:bg-black/50 z-10">
-                        <span className="text-xs font-bold px-3 py-1 rounded-full bg-white text-black">
+                    <div className="absolute inset-0 flex items-center justify-center backdrop-blur-sm bg-background/60 dark:bg-black/60 z-10">
+                        <span className="text-xs font-extrabold px-3.5 py-1.5 rounded-full bg-foreground text-background shadow-lg">
                             Sold Out
                         </span>
                     </div>
@@ -67,7 +67,7 @@ export function ProductCard({ id, name, price, originalPrice, image, category, s
             {/* Content Section */}
             <div className="flex flex-col gap-1 mb-4">
                 <div className="flex justify-between items-start">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#30e87a]">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary">
                         {category}
                     </span>
                 </div>
@@ -77,14 +77,14 @@ export function ProductCard({ id, name, price, originalPrice, image, category, s
                         <h3 className="font-bold text-base leading-tight line-clamp-2 product-text-force">
                             {name}
                         </h3>
-                        {farmerName && <p className="text-[10px] text-[#30e87a] mt-1 font-semibold uppercase tracking-wider">Sold by: {farmerName}</p>}
+                        {farmerName && <p className="text-[10px] text-primary mt-1 font-semibold uppercase tracking-wider">Sold by: {farmerName}</p>}
                     </div>
                     <div className="flex flex-col items-end shrink-0">
                         <span className="font-extrabold text-lg product-text-force">
                             ₹{Math.floor(price)}
                         </span>
                         {originalPrice && originalPrice > price && (
-                            <span className="text-xs text-gray-400 line-through mt-[-2px]">
+                            <span className="text-xs text-muted-foreground line-through mt-[-2px]">
                                 ₹{Math.floor(originalPrice)}
                             </span>
                         )}
@@ -98,7 +98,7 @@ export function ProductCard({ id, name, price, originalPrice, image, category, s
                     <Button
                         className={`w-full rounded-xl border-2 font-bold transition-all duration-300 h-11 ${isOutOfStock
                             ? 'bg-gray-700 border-gray-600 text-gray-400 cursor-not-allowed'
-                            : 'bg-transparent border-[#30e87a] text-[#30e87a] hover:bg-[#30e87a] hover:text-[#112117] hover:shadow-[0_0_20px_rgba(48,232,122,0.4)]'
+                            : 'bg-transparent border-primary text-primary hover:bg-primary hover:text-primary-foreground hover:shadow-[0_0_20px_rgba(48,232,122,0.4)]'
                             }`}
                         onClick={(e) => {
                             e.preventDefault();

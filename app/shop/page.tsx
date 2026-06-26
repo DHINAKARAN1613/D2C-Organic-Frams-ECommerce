@@ -2,6 +2,8 @@ import { ShopClient } from './ShopClient';
 import prisma from '@/lib/prisma';
 import { getImageUrl } from '@/lib/imageUtils';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
     title: 'Shop Essentials | Yogam Organic Farms',
     description: 'Pure, organic, and ethically sourced products for your home and health.',

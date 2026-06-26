@@ -124,20 +124,20 @@ export default function SignInPage() {
                 </motion.div>
 
                 {/* Role Switcher */}
-                <motion.div variants={itemVariants} className="flex p-1 bg-background border border-border rounded-xl mb-8 relative">
+                <motion.div variants={itemVariants} className="flex p-1.5 bg-background border border-border rounded-xl mb-8 relative shadow-inner">
                     <button
                         onClick={() => setRole('USER')}
                         type="button"
-                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all ${role === 'USER' ? 'bg-[#30e87a] text-[#112117] shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-extrabold rounded-lg transition-all ${role === 'USER' ? 'bg-primary text-primary-foreground shadow-md scale-[1.02]' : 'text-muted-foreground hover:text-foreground'}`}
                     >
-                        <User className="w-4 h-4" /> Customer
+                        <User className="w-4 h-4 stroke-[2.5]" /> Customer
                     </button>
                     <button
                         onClick={() => setRole('ADMIN')}
                         type="button"
-                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all ${role === 'ADMIN' ? 'bg-orange-500 text-white shadow-lg' : 'text-muted-foreground hover:text-foreground'}`}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-extrabold rounded-lg transition-all ${role === 'ADMIN' ? 'bg-orange-500 text-white shadow-md scale-[1.02]' : 'text-muted-foreground hover:text-foreground'}`}
                     >
-                        <ShieldCheck className="w-4 h-4" /> Admin
+                        <ShieldCheck className="w-4 h-4 stroke-[2.5]" /> Admin
                     </button>
                 </motion.div>
 
@@ -149,7 +149,7 @@ export default function SignInPage() {
                         onClick={handleGoogleSignIn}
                         type="button"
                         disabled={!!isLoading}
-                        className="w-full flex items-center justify-center gap-3 bg-white text-black font-bold py-4 rounded-xl hover:bg-gray-200 transition-colors"
+                        className="w-full flex items-center justify-center gap-3 bg-surface border border-border shadow-md hover:bg-surface-highlight text-foreground font-bold py-4 rounded-xl transition-all duration-200"
                     >
                         {isLoading === 'google' ? <Loader2 className="animate-spin w-5 h-5" /> : (
                             <>
@@ -174,7 +174,7 @@ export default function SignInPage() {
                                 <Mail className="w-5 h-5 relative z-10" />
                             </div>
                             <input
-                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-[#9db8a8]/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
+                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground/60 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
                                 id="email"
                                 placeholder="you@example.com"
                                 type="email"
@@ -194,7 +194,7 @@ export default function SignInPage() {
                                 <Lock className="w-5 h-5 relative z-10" />
                             </div>
                             <input
-                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder-[#9db8a8]/50 focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
+                                className="block w-full pl-11 pr-4 py-4 bg-background border border-border rounded-xl text-foreground placeholder:text-muted-foreground/60 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all text-sm font-medium"
                                 id="password"
                                 placeholder="••••••••"
                                 type="password"

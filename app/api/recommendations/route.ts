@@ -40,26 +40,50 @@ export async function GET(request: Request) {
             return NextResponse.json({ recommendations: [] });
         }
 
-        // 3. Run the Apriori Algorithm
-        // Lowered minSupport and minConfidence for dev environments with less data
-        const rules = generateAprioriRules(transactions, 0.01, 0.01);
+        // 3. Run the Apriori Algorithm (optimized minSupport/minConfidence for hybrid precision)
+        const rules = generateAprioriRules(transactions, 0.005, 0.01);
 
-        // 4. Get Top Recommended Product IDs for the requested Product
+        // 4. Tier 1: Get Apriori Association Rule Recommendations
         const recommendedProductIds = getRecommendationsForProduct(productId, rules, 3);
 
-        if (recommendedProductIds.length === 0) {
-            return NextResponse.json({ recommendations: [] });
+        // 5. Tier 2: Category Affinity Fallback (If Apriori yielded < 3)
+        if (recommendedProductIds.length < 3) {
+            const currentProduct = await prisma.product.findUnique({
+                where: { id: productId },
+                select: { category: true }
+            });
+
+            if (currentProduct?.category) {
+                const categoryProducts = await prisma.product.findMany({
+                    where: {
+                        category: currentProduct.category,
+                        id: { notIn: [productId, ...recommendedProductIds] },
+                        farmerId: { not: null }
+                    },
+                    take: 3 - recommendedProductIds.length,
+                    select: { id: true }
+                });
+                recommendedProductIds.push(...categoryProducts.map(p => p.id));
+            }
         }
 
-        // 5. Fetch the actual Product details to return to the frontend
+        // 6. Tier 3: Global Marketplace Bestseller Fallback (If still < 3)
+        if (recommendedProductIds.length < 3) {
+            const globalProducts = await prisma.product.findMany({
+                where: {
+                    id: { notIn: [productId, ...recommendedProductIds] },
+                    farmerId: { not: null }
+                },
+                take: 3 - recommendedProductIds.length,
+                select: { id: true }
+            });
+            recommendedProductIds.push(...globalProducts.map(p => p.id));
+        }
+
+        // 7. Fetch full Product details to return to the frontend
         const recommendedProducts = await prisma.product.findMany({
             where: {
-                id: {
-                    in: recommendedProductIds,
-                },
-                farmerId: { not: null },
-                // Optionally, ensure they are in stock
-                // stock: { gt: 0 }
+                id: { in: recommendedProductIds }
             },
             select: {
                 id: true,

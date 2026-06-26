@@ -73,16 +73,16 @@ export default function AboutPage() {
                     <div className="flex flex-col md:flex-row items-center gap-12">
                         <div className="flex-1 space-y-6">
                             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-bold uppercase tracking-wider">
-                                <Sprout className="h-4 w-4" /> The Beginning
+                                <Sprout className="h-4 w-4" /> Namma Ooru Story
                             </div>
                             <h2 className="text-4xl font-bold text-foreground">
-                                Returning to Our Roots
+                                Returning to Our Tamil Nadu Roots
                             </h2>
                             <p className="text-lg text-muted-foreground leading-relaxed">
-                                Yogam Farms started 5 years ago when we realized that the "fresh" produce in markets was anything but. It was traveled miles, lost nutrients, and was coated in wax.
+                                Yogam Farms started 5 years ago when we realized that traditional vegetable markets in Chennai and Coimbatore were flooded with chemically ripened produce transported from distant states.
                             </p>
                             <p className="text-lg text-muted-foreground leading-relaxed">
-                                We decided to reclaim the connection between the farmer and the table. What started as a small patch of spinach has grown into a diverse ecosystem of fruits, vegetables, and ethically sourced essentials.
+                                We decided to revive the direct Uzhavar Sandhai spirit online. What started as partnering with a single organic vegetable grower in Thanjavur has grown into a vibrant South Indian network connecting Ooty orchards, Pollachi coconut groves, and Madurai farms directly to your kitchen.
                             </p>
                             <div className="pt-4">
                                 <Link href="/shop">

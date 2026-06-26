@@ -28,15 +28,15 @@ export function UserNav() {
                 ) : null}
                 {(session.user as any).role === 'FARMER' && (
                     <Link href="/farmer">
-                        <Button variant="ghost" size="sm" className="hidden sm:flex text-primary hover:text-primary-focus hover:bg-primary/10" title="Farmer Dashboard">
-                            <LayoutDashboard className="h-4 w-4 mr-2" />
+                        <Button variant="ghost" size="sm" className="hidden sm:flex text-primary font-bold hover:bg-primary/10" title="Farmer Dashboard">
+                            <LayoutDashboard className="h-4 w-4 mr-1.5" />
                             Farmer
                         </Button>
                     </Link>
                 )}
                 <Link href="/profile/orders">
-                    <Button variant="ghost" size="sm" className="flex" title="My Orders">
-                        <Package className="h-4 w-4 sm:mr-2" />
+                    <Button variant="ghost" size="sm" className="flex text-current font-bold hover:bg-muted/30" title="My Orders">
+                        <Package className="h-4 w-4 sm:mr-1.5" />
                         <span className="hidden sm:inline">Orders</span>
                     </Button>
                 </Link>

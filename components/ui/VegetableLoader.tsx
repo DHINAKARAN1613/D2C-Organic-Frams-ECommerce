@@ -29,13 +29,13 @@ export function VegetableLoader() {
 
                 {/* Center Logo/Icon */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="w-3 h-3 bg-[#30e87a] rounded-full animate-pulse shadow-[0_0_10px_#30e87a]" />
+                    <div className="w-3 h-3 bg-primary rounded-full animate-pulse shadow-md shadow-primary/50" />
                 </div>
             </div>
 
             <div className="flex flex-col items-center gap-2">
-                <p className="text-[#30e87a] font-bold text-lg animate-pulse">Growing Goodness...</p>
-                <p className="text-[#9db8a8] text-sm">Harvesting fresh data for you.</p>
+                <p className="text-primary font-extrabold text-lg animate-pulse">Growing Goodness...</p>
+                <p className="text-muted-foreground text-sm font-semibold">Harvesting fresh data for you.</p>
             </div>
         </div>
     );
@@ -43,7 +43,7 @@ export function VegetableLoader() {
 
 export function VegetableLoaderPage() {
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-[#112117]">
+        <div className="min-h-screen w-full flex items-center justify-center bg-background">
             <VegetableLoader />
         </div>
     );

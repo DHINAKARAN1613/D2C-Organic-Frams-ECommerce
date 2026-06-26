@@ -59,6 +59,12 @@ const nextConfig = {
         hostname: 'images.pexels.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.pune.news',
+        port: '',
+        pathname: '/**',
       }
     ],
     dangerouslyAllowSVG: true,

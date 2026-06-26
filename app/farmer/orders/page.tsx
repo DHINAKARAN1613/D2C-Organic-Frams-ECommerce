@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import { FarmerOrdersList } from '@/components/farmer/FarmerOrdersList';
 
+import { FarmerOrdersHeader } from '@/components/farmer/FarmerOrdersHeader';
+
 export const metadata = {
     title: 'Orders | Farmer Panel | Yogam Organic Farms',
 };
@@ -25,7 +27,6 @@ export default async function FarmerOrdersPage() {
             }
         },
         include: {
-            // Only include the items that belong to THIS farmer
             items: {
                 where: {
                     product: { farmerId: session.user.id }
@@ -39,10 +40,7 @@ export default async function FarmerOrdersPage() {
 
     return (
         <div className="space-y-6">
-            <div className="border-b border-[#2d4035] pb-6">
-                <h1 className="text-3xl font-bold text-white tracking-tight">Incoming Orders</h1>
-                <p className="text-[#9db8a8] mt-1">Manage orders containing your products in real-time.</p>
-            </div>
+            <FarmerOrdersHeader />
 
             <FarmerOrdersList initialOrders={orders} farmerId={session.user.id} />
         </div>

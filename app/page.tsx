@@ -3,11 +3,39 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Mail, ChevronRight, Leaf } from 'lucide-react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import { useRef } from 'react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { useRef, useState, useEffect } from 'react';
 
 export default function Home() {
   const containerRef = useRef(null);
+  const loopTitles = ["Namma Tamil Nadu", "நம்ம தமிழ்நாடு"];
+  const [titleIdx, setTitleIdx] = useState(0);
+  const [typedText, setTypedText] = useState("");
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTitleIdx((prev) => (prev + 1) % loopTitles.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const currentStr = loopTitles[titleIdx];
+    const segmenter = new Intl.Segmenter(titleIdx === 1 ? 'ta' : 'en', { granularity: 'grapheme' });
+    const chars = Array.from(segmenter.segment(currentStr)).map(s => s.segment);
+    let charIdx = 0;
+    setTypedText("");
+    const typeTimer = setInterval(() => {
+      if (charIdx <= chars.length) {
+        setTypedText(chars.slice(0, charIdx).join(""));
+        charIdx++;
+      } else {
+        clearInterval(typeTimer);
+      }
+    }, 90);
+    return () => clearInterval(typeTimer);
+  }, [titleIdx]);
+
   const { scrollY } = useScroll();
   const yBackground = useTransform(scrollY, [0, 1000], [0, 300]);
   const opacityHero = useTransform(scrollY, [0, 500], [1, 0]);
@@ -58,34 +86,35 @@ export default function Home() {
             className="group cursor-pointer inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/5 border border-white/10 text-primary text-sm font-bold uppercase tracking-widest backdrop-blur-md shadow-lg transition-all hover:border-primary/50 hover:shadow-[0_0_20px_rgba(48,232,122,0.3)]"
           >
             <Leaf className="w-5 h-5 fill-current text-primary group-hover:rotate-12 group-hover:scale-110 transition-transform duration-300 animate-pulse" />
-            <span className="text-white group-hover:text-primary transition-colors duration-300">100% Organic & Fresh</span>
+            <span className="text-white group-hover:text-primary transition-colors duration-300">100% Namma Ooru Organic</span>
           </motion.div>
 
           <motion.h1
             variants={staggerContainer}
             initial="initial"
             animate="animate"
-            className="text-6xl md:text-7xl lg:text-9xl font-display font-bold leading-none tracking-tighter drop-shadow-2xl flex flex-col items-center"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-display font-bold leading-[1.3] tracking-tight drop-shadow-2xl flex flex-col items-center text-center w-full px-4"
           >
-            <motion.span
-              variants={fadeInUp}
-              className="relative text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/70 drop-shadow-sm z-10 pb-6"
-            >
-              Pure Organic
+            <div className="relative z-10 py-2 flex items-center justify-center min-h-[1.35em]">
+              <motion.span
+                className="text-transparent bg-clip-text bg-gradient-to-b from-white via-white/90 to-white/70 drop-shadow-sm whitespace-nowrap inline-block pb-2 pt-1 px-2"
+              >
+                {typedText || "\u00A0"}
+              </motion.span>
               {/* Glow effect behind text */}
               <motion.span
-                className="absolute inset-0 blur-2xl opacity-25 bg-white -z-10 h-full w-full block"
+                className="absolute inset-0 blur-3xl opacity-30 bg-white -z-10 h-full w-full block pointer-events-none"
                 animate={{ opacity: [0.2, 0.5, 0.2], scale: [1, 1.1, 1] }}
                 transition={{ duration: 4, repeat: Infinity }}
               />
-            </motion.span>
+            </div>
             <motion.span
               variants={fadeInUp}
               whileHover={{ scale: 1.05, rotate: -2 }}
               transition={{ type: "spring", stiffness: 300 }}
-              className="relative text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 animate-gradient-x bg-[length:200%_auto] pb-4 cursor-default drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]"
+              className="relative text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-orange-400 to-yellow-300 animate-gradient-x bg-[length:200%_auto] pb-2 cursor-default drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]"
             >
-              Essential
+              Organic Essentials
               {/* Glow effect behind text */}
               <motion.span
                 className="absolute inset-0 blur-3xl opacity-30 bg-yellow-500 -z-10"
@@ -95,11 +124,11 @@ export default function Home() {
             </motion.span>
           </motion.h1>
 
-          <motion.p variants={fadeInUp} className="text-lg md:text-2xl text-gray-200 max-w-2xl font-light leading-relaxed drop-shadow-md">
-            Curated natural goods for a sustainable lifestyle. Reconnect with nature through our hand-picked selection of earth-friendly products.
+          <motion.p variants={fadeInUp} className="text-base md:text-xl text-gray-200 max-w-2xl font-light leading-relaxed drop-shadow-md text-center mt-2">
+            Directly sourced from certified local farms across Ooty, Pollachi, and the Cauvery Delta. Experience authentic South Indian farm-to-table freshness.
           </motion.p>
 
-          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-5 mt-6 w-full sm:w-auto">
+          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4 mt-5 w-full sm:w-auto">
             <Link href="/shop" className="group h-14 px-10 rounded-full bg-[#30e87a] text-black text-lg font-bold tracking-wide transition-all duration-300 relative overflow-hidden hover:scale-105 shadow-[0_0_20px_rgba(48,232,122,0.5)] hover:shadow-[0_0_40px_rgba(48,232,122,0.8),0_0_80px_rgba(48,232,122,0.4)] flex items-center justify-center gap-2 border border-[#30e87a]">
               <span className="relative z-10 flex items-center gap-2">
                 Shop Natural

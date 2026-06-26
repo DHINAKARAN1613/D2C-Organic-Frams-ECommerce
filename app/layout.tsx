@@ -79,9 +79,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${splineSans.variable} antialiased min-h-screen flex flex-col bg-background text-foreground font-sans overflow-x-hidden`}
+        className={`${geistSans.variable} ${geistMono.variable} ${splineSans.variable} antialiased min-h-screen flex flex-col bg-background text-foreground font-sans overflow-x-hidden transition-colors duration-300`}
       >
         <SessionProvider>
           <LanguageProvider>
@@ -91,9 +91,8 @@ export default function RootLayout({
                   <ThemeProvider
                     attribute="class"
                     defaultTheme="dark"
-                    forcedTheme="dark"
-                    enableSystem={false}
-                    disableTransitionOnChange
+                    enableSystem={true}
+                    disableTransitionOnChange={false}
                   >
                     <ClientLayoutWrapper>
                       {children}

@@ -10,6 +10,7 @@ export default function FarmersClient({ initialFarmers }: { initialFarmers: any[
     const [searchQuery, setSearchQuery] = useState('');
     const [filter, setFilter] = useState('ALL');
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const [activeMedia, setActiveMedia] = useState<{ url: string; title: string; type: 'image' | 'video' } | null>(null);
     const router = useRouter();
 
     const filteredFarmers = farmers.filter(f => {
@@ -47,7 +48,7 @@ export default function FarmersClient({ initialFarmers }: { initialFarmers: any[
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 relative">
             <div className="flex flex-col sm:flex-row gap-4 justify-between bg-surface p-4 rounded-2xl border border-border">
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
@@ -121,9 +122,12 @@ export default function FarmersClient({ initialFarmers }: { initialFarmers: any[
                                         <div>
                                             <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Aadhar Image</p>
                                             {farmer.aadharImage ? (
-                                                <a href={getImageUrl(farmer.aadharImage)!} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-primary hover:underline bg-primary/5 w-max px-3 py-2 rounded-lg border border-primary/20">
+                                                <button 
+                                                    onClick={() => setActiveMedia({ url: getImageUrl(farmer.aadharImage)!, title: `${farmer.name || 'Farmer'} - Aadhar ID`, type: 'image' })}
+                                                    className="flex items-center gap-2 text-sm text-primary hover:underline bg-primary/5 w-max px-3 py-2 rounded-lg border border-primary/20 transition-all hover:scale-105 active:scale-95"
+                                                >
                                                     <Eye className="w-4 h-4" /> View Aadhar ID
-                                                </a>
+                                                </button>
                                             ) : <span className="text-sm text-muted-foreground">Not uploaded</span>}
                                         </div>
                                     </div>
@@ -132,17 +136,23 @@ export default function FarmersClient({ initialFarmers }: { initialFarmers: any[
                                         <div>
                                             <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Organic Certificate</p>
                                             {farmer.organicCertificate ? (
-                                                <a href={getImageUrl(farmer.organicCertificate)!} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-blue-400 hover:underline bg-blue-500/10 w-max px-3 py-2 rounded-lg border border-blue-500/20">
+                                                <button 
+                                                    onClick={() => setActiveMedia({ url: getImageUrl(farmer.organicCertificate)!, title: `${farmer.name || 'Farmer'} - Organic Certificate`, type: 'image' })}
+                                                    className="flex items-center gap-2 text-sm text-blue-400 hover:underline bg-blue-500/10 w-max px-3 py-2 rounded-lg border border-blue-500/20 transition-all hover:scale-105 active:scale-95"
+                                                >
                                                     <FileText className="w-4 h-4" /> View Certificate
-                                                </a>
+                                                </button>
                                             ) : <span className="text-sm text-amber-500">Missing Certificate</span>}
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold text-muted-foreground uppercase mb-2">Geo-Tagged Video</p>
                                             {farmer.farmVideo ? (
-                                                <a href={getImageUrl(farmer.farmVideo)!} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-purple-400 hover:underline bg-purple-500/10 w-max px-3 py-2 rounded-lg border border-purple-500/20">
+                                                <button 
+                                                    onClick={() => setActiveMedia({ url: getImageUrl(farmer.farmVideo)!, title: `${farmer.name || 'Farmer'} - Farm Video`, type: 'video' })}
+                                                    className="flex items-center gap-2 text-sm text-purple-400 hover:underline bg-purple-500/10 w-max px-3 py-2 rounded-lg border border-purple-500/20 transition-all hover:scale-105 active:scale-95"
+                                                >
                                                     <PlayCircle className="w-4 h-4" /> Watch Farm Video
-                                                </a>
+                                                </button>
                                             ) : <span className="text-sm text-amber-500">Missing Video</span>}
                                         </div>
                                     </div>
@@ -173,6 +183,35 @@ export default function FarmersClient({ initialFarmers }: { initialFarmers: any[
                     ))
                 )}
             </div>
+
+            {/* IN-PAGE LIGHTBOX MODAL VIEWER */}
+            {activeMedia && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md transition-all">
+                    <div className="relative w-full max-w-4xl bg-[#112117] border border-[#2d4035] rounded-2xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
+                        <div className="flex items-center justify-between px-6 py-4 bg-[#1c2e24] border-b border-[#2d4035]">
+                            <h3 className="font-bold text-white text-base md:text-lg flex items-center gap-2 truncate pr-4">
+                                {activeMedia.type === 'video' ? <Video className="w-5 h-5 text-purple-400 shrink-0" /> : <Eye className="w-5 h-5 text-[#30e87a] shrink-0" />}
+                                <span className="truncate">{activeMedia.title}</span>
+                            </h3>
+                            <div className="flex items-center gap-3 shrink-0">
+                                <a href={activeMedia.url} target="_blank" rel="noreferrer" className="px-3 py-1.5 bg-[#112117] hover:bg-white/10 text-[#9db8a8] hover:text-white border border-[#2d4035] rounded-lg transition-colors text-xs font-bold">
+                                    Open Raw Tab
+                                </a>
+                                <button onClick={() => setActiveMedia(null)} className="p-1.5 text-[#9db8a8] hover:text-white hover:bg-white/10 rounded-lg transition-colors">
+                                    <XCircle className="w-6 h-6" />
+                                </button>
+                            </div>
+                        </div>
+                        <div className="flex-1 p-4 md:p-8 flex items-center justify-center overflow-auto bg-black/60 min-h-[300px]">
+                            {activeMedia.type === 'video' ? (
+                                <video src={activeMedia.url} controls autoPlay className="max-w-full max-h-[72vh] rounded-xl shadow-2xl border border-white/10" />
+                            ) : (
+                                <img src={activeMedia.url} alt={activeMedia.title} className="max-w-full max-h-[72vh] object-contain rounded-xl shadow-2xl" />
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

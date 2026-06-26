@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function ThemeToggle() {
-    const { setTheme, theme } = useTheme();
+    const { setTheme, resolvedTheme } = useTheme();
     const [mounted, setMounted] = React.useState(false);
 
     React.useEffect(() => {
@@ -26,19 +26,19 @@ export function ThemeToggle() {
         <Button
             variant="ghost"
             size="sm"
-            className="w-10 h-10 px-0 relative overflow-hidden"
-            onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            className="w-10 h-10 px-0 relative overflow-hidden text-foreground hover:bg-muted/50"
+            onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
         >
             <AnimatePresence mode="wait" initial={false}>
                 <motion.div
-                    key={theme}
+                    key={resolvedTheme}
                     initial={{ y: -20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 20, opacity: 0 }}
                     transition={{ duration: 0.2 }}
                     className="absolute inset-0 flex items-center justify-center"
                 >
-                    {theme === 'dark' ? (
+                    {resolvedTheme === 'dark' ? (
                         <Moon className="h-5 w-5" />
                     ) : (
                         <Sun className="h-5 w-5" />

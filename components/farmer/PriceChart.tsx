@@ -14,10 +14,10 @@ const data = [
 
 export default function PriceChart() {
     return (
-        <div className="bg-[#1c2e24] border border-[#2d4035] rounded-2xl p-6 shadow-xl">
+        <div className="bg-surface border border-border rounded-2xl p-6 shadow-md">
             <div className="mb-6">
-                <h3 className="text-xl font-bold text-white">Market Price Trends (₹/kg)</h3>
-                <p className="text-sm text-[#9db8a8]">Historical average prices for top organic crops</p>
+                <h3 className="text-xl font-bold text-foreground">Market Price Trends (₹/kg)</h3>
+                <p className="text-sm font-medium text-muted-foreground">Historical average prices for top organic crops</p>
             </div>
             
             <div className="h-[300px] w-full">
@@ -26,15 +26,15 @@ export default function PriceChart() {
                         data={data}
                         margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                     >
-                        <CartesianGrid strokeDasharray="3 3" stroke="#2d4035" />
-                        <XAxis dataKey="name" stroke="#9db8a8" />
-                        <YAxis stroke="#9db8a8" />
+                        <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                        <XAxis dataKey="name" className="text-xs fill-muted-foreground" />
+                        <YAxis className="text-xs fill-muted-foreground" />
                         <Tooltip 
-                            contentStyle={{ backgroundColor: '#112117', border: '1px solid #2d4035', borderRadius: '8px' }}
-                            itemStyle={{ color: '#fff' }}
+                            contentStyle={{ backgroundColor: 'var(--surface, #112117)', borderColor: 'var(--border, #2d4035)', borderRadius: '8px', color: 'var(--foreground, #fff)' }}
+                            itemStyle={{ color: 'var(--foreground, #fff)' }}
                         />
                         <Line type="monotone" dataKey="OrganicTomatoes" stroke="#ff4d4f" strokeWidth={2} activeDot={{ r: 8 }} />
-                        <Line type="monotone" dataKey="OrganicOnions" stroke="#30e87a" strokeWidth={2} />
+                        <Line type="monotone" dataKey="OrganicOnions" stroke="#10b981" strokeWidth={2} />
                         <Line type="monotone" dataKey="Spinach" stroke="#3b82f6" strokeWidth={2} />
                     </LineChart>
                 </ResponsiveContainer>

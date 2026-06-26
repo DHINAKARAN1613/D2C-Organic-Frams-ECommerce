@@ -99,15 +99,15 @@ export function generateAprioriRules(
         }
     }
 
-    // Sort rules by Lift descending, then Confidence descending.
-    // Lift is the strongest indicator of a true cross-selling relationship.
-    rules.sort((a, b) => b.lift - a.lift || b.confidence - a.confidence);
+    // Sort rules by composite score (Lift * Confidence), then Support.
+    // Lift > 1 indicates strong positive affinity; Confidence indicates likelihood.
+    rules.sort((a, b) => (b.lift * b.confidence) - (a.lift * a.confidence) || b.support - a.support);
 
     return rules;
 }
 
 /**
- * Helper function to get top recommendations for a specific product.
+ * Helper function to get top ranked recommendations for a specific product.
  */
 export function getRecommendationsForProduct(
     productId: string,
@@ -115,16 +115,15 @@ export function getRecommendationsForProduct(
     maxRecommendations: number = 3
 ): string[] {
     // Find all rules where the current product is the antecedent
-    // and ideally the lift is > 1.0 (indicating a positive correlation)
-    const productRules = rules.filter((r) => r.antecedent === productId && r.lift > 1.0);
+    // Prioritize rules with Lift > 1.0 (positive cross-selling correlation)
+    const positiveRules = rules.filter((r) => r.antecedent === productId && r.lift > 1.0);
     
-    // If we are too strict and get nothing, fallback to just any rule
-    const fallbackRules = productRules.length > 0 ? productRules : rules.filter((r) => r.antecedent === productId);
+    // Fallback to any matching rules if positive affinity rules are insufficient
+    const matchingRules = positiveRules.length > 0 ? positiveRules : rules.filter((r) => r.antecedent === productId);
 
-    // Extract the consequents (recommended products)
-    const recommendedProductIds = fallbackRules.map((r) => r.consequent);
+    // Extract consequents ordered by rule strength
+    const recommendedProductIds = matchingRules.map((r) => r.consequent);
 
-    // Ensure uniqueness and limit to maxRecommendations
-    const uniqueRecommendations = Array.from(new Set(recommendedProductIds));
-    return uniqueRecommendations.slice(0, maxRecommendations);
+    // Ensure uniqueness
+    return Array.from(new Set(recommendedProductIds)).slice(0, maxRecommendations);
 }

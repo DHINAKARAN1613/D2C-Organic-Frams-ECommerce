@@ -5,89 +5,112 @@ html {
 }
 
 @theme {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
 
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
+  --color-surface: hsl(var(--surface));
+  --color-surface-highlight: hsl(var(--surface-highlight));
 
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
 
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
 
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
 
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
 
-  --color-border: var(--border);
-  --color-input: var(--input);
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
 
   --radius: var(--radius);
 }
 
 @layer base {
   :root {
-    /* Sage Green Theme System - Strict Enforcement */
+    /* Light Theme - Crisp Organic Cream & Forest Green */
+    --background: 140 30% 98%;
+    --foreground: 146 54% 8%;
 
-    /* Semantic Colors */
-    --background: 146 54% 4%;
-    /* #051109 - Deepest Sage Black */
-    --foreground: 0 0% 100%;
-    /* #ffffff - Pure White */
+    --surface: 0 0% 100%;
+    --surface-highlight: 140 25% 94%;
 
-    --surface: 145 32% 10%;
-    /* #112117 - Standard Card Surface */
-    --surface-highlight: 145 26% 14%;
-    /* #1c2e24 - Hover/Interactive */
+    --primary: 144 75% 38%;
+    --primary-foreground: 0 0% 100%;
 
-    --primary: 144 79% 55%;
-    /* #30e87a - Vibrant Action Green */
-    --primary-foreground: 145 32% 10%;
-    /* #112117 - Dark on Primary */
-
-    --secondary: 145 13% 67%;
-    /* #9db8a8 - Muted Sage */
+    --secondary: 145 15% 45%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 146 12% 75%;
-    /* #b0c4b8 - Readable Muted Text */
-    --muted-foreground: 146 12% 75%;
+    --muted: 140 20% 92%;
+    --muted-foreground: 145 10% 45%;
 
     --accent: 38 92% 50%;
-    /* #f59e0b - Warm Accent (Amber/Orange) */
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 140 20% 88%;
+    --input: 140 20% 88%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 146 54% 8%;
+
+    --radius: 1rem;
+  }
+
+  .dark {
+    /* Sage Green Theme System - Deepest Sage Black */
+    --background: 146 54% 4%;
+    --foreground: 0 0% 100%;
+
+    --surface: 145 32% 10%;
+    --surface-highlight: 145 26% 14%;
+
+    --primary: 144 79% 55%;
+    --primary-foreground: 145 32% 10%;
+
+    --secondary: 145 13% 67%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 145 26% 16%;
+    --muted-foreground: 146 12% 70%;
+
+    --accent: 38 92% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 145 26% 20%;
-    /* #29382f - Subtle Divider */
     --input: 145 26% 20%;
 
     --card: 145 32% 10%;
     --card-foreground: 0 0% 100%;
+  }
 
-    --radius: 1rem;
+  * {
+    border-color: hsl(var(--border));
+  }
 
-    /* Global Defaults */
+  body {
     color: hsl(var(--foreground));
     background-color: hsl(var(--background));
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
 }
 
 @layer utilities {
   .product-text-force {
-    color: #000000 !important;
+    color: hsl(var(--foreground)) !important;
     position: relative;
     z-index: 20;
-  }
-
-  .dark .product-text-force {
-    color: #ffffff !important;
   }
 }
 

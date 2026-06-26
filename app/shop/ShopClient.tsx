@@ -106,7 +106,7 @@ export function ShopClient({ initialProducts, categories }: { initialProducts: a
     };
 
     return (
-        <div className="flex flex-1 w-full px-4 lg:px-8 pt-28 pb-8 gap-8 font-display bg-[#112117] min-h-screen text-white">
+        <div className="flex flex-1 w-full px-4 lg:px-8 pt-28 pb-8 gap-8 font-display bg-background min-h-screen text-foreground transition-colors duration-300">
             {/* Sticky Sidebar (Filters) */}
             <aside className="hidden lg:block w-72 shrink-0 sticky top-24 h-[calc(100vh-8rem)] overflow-y-auto pr-2 custom-scrollbar">
                 <ShopFilters
@@ -272,7 +272,7 @@ export function ShopClient({ initialProducts, categories }: { initialProducts: a
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.9 }}
                                     key={product.id}
-                                    className="group flex flex-col bg-[#1c2e24] border border-transparent hover:border-primary/30 hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] hover:bg-[#253b30] rounded-3xl p-3 transition-all duration-300 hover:-translate-y-1"
+                                    className="group flex flex-col bg-surface border border-border shadow-md shadow-black/5 dark:shadow-black/20 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/10 hover:bg-surface-highlight rounded-3xl p-3 transition-all duration-300 hover:-translate-y-1"
                                 >
                                     <Link href={`/product/${product.id}`} className="relative w-full aspect-square rounded-xl overflow-hidden bg-white/5 mb-4 block">
                                         <Image
@@ -294,7 +294,7 @@ export function ShopClient({ initialProducts, categories }: { initialProducts: a
                                     <div className="flex flex-col flex-1 gap-1">
                                         <div className="flex justify-between items-start">
                                             <div className="flex flex-col">
-                                                <Link href={`/product/${product.id}`} className="text-white font-bold text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1">{product.name}</Link>
+                                                <Link href={`/product/${product.id}`} className="text-foreground font-bold text-lg leading-tight group-hover:text-primary transition-colors line-clamp-1">{product.name}</Link>
                                                 {product.farmerName && <span className="text-xs text-primary mt-0.5">Sold by: {product.farmerName}</span>}
                                             </div>
                                             <div className="flex items-center gap-1 text-xs text-[#ffd700]">
@@ -302,13 +302,13 @@ export function ShopClient({ initialProducts, categories }: { initialProducts: a
                                                 {product.rating}
                                             </div>
                                         </div>
-                                        <p className="text-secondary-text text-sm mb-3">{product.description}</p>
+                                        <p className="text-muted-foreground text-sm mb-3">{product.description}</p>
 
                                         <div className="mt-auto flex flex-col gap-3">
                                             <div className="flex justify-between items-end">
                                                 <div className="flex flex-col leading-none">
-                                                    {product.originalPrice && <p className="text-xs text-secondary-text line-through">₹{product.originalPrice}</p>}
-                                                    <p className={`text-xl font-bold ${product.originalPrice ? 'text-[#e85d30]' : 'text-white'}`}>₹{product.price}</p>
+                                                    {product.originalPrice && <p className="text-xs text-muted-foreground line-through">₹{product.originalPrice}</p>}
+                                                    <p className={`text-xl font-bold ${product.originalPrice ? 'text-rose-500' : 'text-foreground'}`}>₹{product.price}</p>
                                                 </div>
                                                 {getCartCount(product.id) > 0 && (
                                                     <div className="text-xs text-primary font-medium flex items-center gap-1">
@@ -320,7 +320,7 @@ export function ShopClient({ initialProducts, categories }: { initialProducts: a
                                             <div className="flex items-center gap-2">
                                                 {!product.outOfStock ? (
                                                     <>
-                                                        <div className="flex items-center rounded-full bg-[#112117] border border-[#2d4035]">
+                                                        <div className="flex items-center rounded-full bg-background border border-border">
                                                             <button
                                                                 onClick={() => handleQuantityChange(product.id, -1)}
                                                                 className="w-8 h-8 flex items-center justify-center text-sm hover:text-primary transition-colors"
@@ -359,14 +359,13 @@ export function ShopClient({ initialProducts, categories }: { initialProducts: a
                     </motion.div>
                 )}
 
-                {/* Pagination (Load More) */}
                 {/* Pagination Controls */}
                 {(visibleCount < filteredProducts.length || visibleCount > 8) && (
                     <div className="mt-12 flex justify-center gap-4">
                         {visibleCount < filteredProducts.length && (
                             <button
                                 onClick={() => setVisibleCount(prev => prev + 6)}
-                                className="px-8 py-3 bg-[#2d4035] hover:bg-[#3d5548] text-white font-bold rounded-full transition-colors"
+                                className="px-8 py-3 bg-primary text-primary-foreground font-extrabold rounded-full transition-all hover:opacity-90 shadow-md text-sm"
                             >
                                 Load More Products
                             </button>
@@ -375,7 +374,7 @@ export function ShopClient({ initialProducts, categories }: { initialProducts: a
                         {visibleCount > 8 && (
                             <button
                                 onClick={() => setVisibleCount(8)}
-                                className="px-8 py-3 border border-[#2d4035] hover:bg-[#2d4035] text-white font-bold rounded-full transition-colors"
+                                className="px-8 py-3 border border-border bg-surface text-foreground hover:bg-muted font-bold rounded-full transition-all shadow-sm text-sm"
                             >
                                 Show Less
                             </button>
